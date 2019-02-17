@@ -1,0 +1,8 @@
+flake8
+ipython
+mypy
+pre-commit
+pytest
+pudb
+pylint
+requirements-tools

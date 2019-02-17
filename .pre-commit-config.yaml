@@ -1,0 +1,67 @@
+---
+exclude: ^bin/
+fail_fast: true
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v1.2.3
+  hooks:
+  - id: autopep8-wrapper
+  - id: check-added-large-files
+  - id: check-byte-order-marker
+  - id: check-case-conflict
+  - id: check-docstring-first
+  - id: check-json
+  - id: check-merge-conflict
+  - id: check-symlinks
+  - id: check-xml
+  - id: check-yaml
+  - id: debug-statements
+  - id: detect-aws-credentials
+    args:
+    - --allow-missing-credentials
+  - id: detect-private-key
+  - id: double-quote-string-fixer
+  - id: end-of-file-fixer
+  - id: fix-encoding-pragma
+    args:
+    - --remove
+  - id: flake8
+  - id: forbid-new-submodules
+  - id: mixed-line-ending
+  - id: name-tests-test
+  - id: pretty-format-json
+    args: [
+     --autofix,
+     --no-sort-keys,
+     --indent, '4'
+    ]
+  - id: requirements-txt-fixer
+  - id: sort-simple-yaml
+  - id: trailing-whitespace
+- repo: https://github.com/asottile/reorder_python_imports
+  rev: v1.0.1
+  hooks:
+  - id: reorder-python-imports
+- repo: https://github.com/asottile/add-trailing-comma
+  rev: v0.6.4
+  hooks:
+  - id: add-trailing-comma
+- repo: local
+  hooks:
+  - id: pylint
+    name: Pylint
+    entry: venv/bin/pylint
+    language: system
+    types: [python]
+- repo: https://github.com/pre-commit/mirrors-mypy
+  rev: v0.650
+  hooks:
+  - id: mypy
+- repo: https://github.com/pre-commit/mirrors-autopep8
+  sha: v1.4.3
+  hooks:
+  - id: autopep8
+- repo: https://github.com/PyCQA/flake8
+  sha: 3.7.5
+  hooks:
+  - id: flake8
