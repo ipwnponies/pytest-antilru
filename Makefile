@@ -2,11 +2,17 @@
 
 .PHONY: venv
 venv:
-	bin/venv_update.py venv= -p python3 venv install= -r requirements-dev.txt -r requirements.txt bootstrap-deps= -r requirements-bootstrap.txt >/dev/null
+	bin/venv_update.py \
+		venv= -p python3 venv \
+		install= -r requirements-dev.txt -r requirements.txt \
+		bootstrap-deps= -r requirements-bootstrap.txt \
+		pip-command= pip-faster install --upgrade --prune -e . \
+		>/dev/null
 	venv/bin/pre-commit install
 
 .PHONY: test
-test:
+test: venv
+	venv/bin/pytest tests/
 
 .PHONY: clean
 clean: ## Clean working directory
