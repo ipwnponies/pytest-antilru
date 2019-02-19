@@ -3,5 +3,6 @@
 
 /venv/
 /.mypy_cache/
+/*.egg-info/
 
 /.coverage
