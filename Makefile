@@ -12,7 +12,7 @@ venv:
 
 .PHONY: test
 test: venv
-	venv/bin/pytest tests/
+	venv/bin/tox
 
 .PHONY: clean
 clean: ## Clean working directory

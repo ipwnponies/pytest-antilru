@@ -4,5 +4,6 @@
 /venv/
 /.mypy_cache/
 /*.egg-info/
+/.tox/
 
 /.coverage
