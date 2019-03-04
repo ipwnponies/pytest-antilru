@@ -17,6 +17,7 @@ setup(
     packages=find_packages(exclude=('tests/*')),
     install_requires=[
         'six',
+        'pytest',
     ],
     entry_points={'pytest11': ['name_of_plugin = pytest_antilru.main']},
     classifiers=[
