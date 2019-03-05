@@ -1,9 +1,11 @@
 .*.swp
 *.py[co]
 
-/venv/
+/.cache/
 /.mypy_cache/
-/*.egg-info/
 /.tox/
+/dist/
+/pytest_antilru.egg-info/
+/venv/
 
 /.coverage
