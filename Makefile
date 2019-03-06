@@ -4,7 +4,7 @@
 venv:
 	bin/venv_update.py \
 		venv= -p python3 venv \
-		install= -r requirements-dev.txt -r requirements.txt \
+		install= -r requirements-dev.txt \
 		bootstrap-deps= -r requirements-bootstrap.txt \
 		pip-command= pip-faster install --upgrade --prune -e . \
 		>/dev/null
