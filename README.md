@@ -1,9 +1,13 @@
 # pytest-antilru
 
+[![Build Status]](https://travis-ci.com/ipwnponies/pytest-antilru)
+
+[Build Status]: https://travis-ci.com/ipwnponies/pytest-antilru.svg?branch=master
+
 Caching expensive function calls with `functools.lru_cache` is simple and great performance optimization.
 It works so well that it'll even speed up your unit test runs!
-Too bad it violated test isolation and caches the wrong values under test conditions, introducing test pollution (persisted state between
-test runs).
+Too bad it violated test isolation and caches the wrong values under test conditions, introducing test pollution
+(persisted state between test runs).
 This package will bust the `lru_cache` between test runs, avoiding test pollution and helping you keep your sanity.
 
 Imagine you mock a network call out and your application ends up caching these mocked results:
@@ -44,7 +48,8 @@ Since this is a `pytest` plugin, you need to be using `pytest` to run your tests
 This project is currently only python 3 compatible.
 Python 2.7 support could be added but py27 EOL is just around the corner.
 It's unclear how many existing projects would benefit from this.
-If you have no choice but to write new py27 code, I guess using this to reduce test pollution would be net *less-badness* in the world.
+If you have no choice but to write new py27 code, I guess using this to reduce test pollution would be net
+*less-badness* in the world.
 Open an issue and it can be added.
 
 ## Installation
