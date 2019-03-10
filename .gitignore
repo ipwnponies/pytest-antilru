@@ -2,7 +2,6 @@
 *.py[co]
 
 /.cache/
-/.mypy_cache/
 /.tox/
 /dist/
 /pytest_antilru.egg-info/

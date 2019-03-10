@@ -1,6 +1,4 @@
 import functools
-from typing import Any
-from typing import Iterator
 
 import pytest
 
@@ -8,7 +6,7 @@ CACHED_FUNCTIONS = []
 
 
 @pytest.hookimpl(hookwrapper=True)
-def pytest_collection(session: Any) -> Iterator[None]:  # pylint: disable=unused-argument
+def pytest_collection(session):  # pylint: disable=unused-argument
     """Monkey patch lru_cache, before any module imports occure."""
 
     # Gotta hold on to this before we patch it away
@@ -37,7 +35,7 @@ def pytest_collection(session: Any) -> Iterator[None]:  # pylint: disable=unused
 
 
 @pytest.hookimpl(hookwrapper=True)
-def pytest_runtest_teardown(item: Any, nextitem: Any) -> Iterator[None]:  # pylint: disable=unused-argument
+def pytest_runtest_teardown(item, nextitem):  # pylint: disable=unused-argument
     """Call cache_clear on every cache_function, after every test run."""
     for function in CACHED_FUNCTIONS:
         function.cache_clear()

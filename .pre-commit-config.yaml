@@ -53,10 +53,6 @@ repos:
     entry: venv/bin/pylint
     language: system
     types: [python]
-- repo: https://github.com/pre-commit/mirrors-mypy
-  rev: v0.650
-  hooks:
-  - id: mypy
 - repo: https://github.com/pre-commit/mirrors-autopep8
   sha: v1.4.3
   hooks:
