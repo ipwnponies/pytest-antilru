@@ -1,6 +1,5 @@
 flake8
 ipython
-mypy
 pre-commit
 pudb
 pylint
