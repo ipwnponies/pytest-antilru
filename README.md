@@ -45,19 +45,14 @@ mock, the results are already cached. Now trying running those two test out-of-o
 
 Since this is a `pytest` plugin, you need to be using `pytest` to run your tests.
 
-This project is currently only python 3 compatible.
-Python 2.7 support could be added but py27 EOL is just around the corner.
-It's unclear how many existing projects would benefit from this.
-If you have no choice but to write new py27 code, I guess using this to reduce test pollution would be net
-*less-badness* in the world.
-Open an issue and it can be added.
+This project is python 2.7 and python 3.5, 3.6, 3.7 compatible.
 
 ## Installation
 
 Simply install this in the same python environment that `pytest` uses and the rest is magic.
 
 ```sh
-pip install pytest-antilru`
+pip install pytest-antilru
 ```
 
 ## How to test the software
