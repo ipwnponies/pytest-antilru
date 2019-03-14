@@ -1,7 +1,6 @@
 # Please don't use this, it's inconsistent and will be monkey-patched left and right.
 # We're only importing it to update functools module's reference
 import functools
-import sys
 from functools import wraps  # pylint: disable=ungrouped-imports
 
 import pytest
@@ -15,7 +14,7 @@ if not hasattr(functools, 'lru_cache'):
         try:
             import functools32 as functools
         except ImportError:
-            sys.exit('Cannot use pytest-antilru, no lru_cache installed!')
+            raise AssertionError('Cannot use pytest-antilru, no lru_cache installed!')
 
 
 CACHED_FUNCTIONS = []
@@ -23,7 +22,7 @@ CACHED_FUNCTIONS = []
 
 @pytest.hookimpl(hookwrapper=True)
 def pytest_collection(session):  # pylint: disable=unused-argument
-    """Monkey patch lru_cache, before any module imports occure."""
+    """Monkey patch lru_cache, before any module imports occur."""
 
     # Gotta hold on to this before we patch it away
     old_lru_cache = functools.lru_cache
