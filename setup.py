@@ -1,19 +1,27 @@
+import sys
+from os import path
+
 from setuptools import find_packages
 from setuptools import setup
 
 
-LONG_DESCRIPTION = '''Caching with functools.lru_cache is great for performance. It works so well that it'll even
-speed up your unit test runs. All you need to sacrifice in return is test isolation and your sanity.
+THIS_DIRECTORY = path.abspath(path.dirname(__file__))
+if sys.version_info[0] >= 3:
+    with open(path.join(THIS_DIRECTORY, 'README.md'), encoding='utf-8') as f:
+        README = f.read()
+else:
+    with open(path.join(THIS_DIRECTORY, 'README.md')) as f:
+        README = f.read().decode('utf-8')
 
-Imagine, you mock some things out and a function caches those results. On your next test run, it doesn't matter what you
-mock, the results are already cached. Now trying running those two test out-of-order sequence and tell me how it goes.
-'''
 
 setup(
     name='pytest-antilru',
+    license='MIT',
     version='0.2.0',
     description='Bust functools.lru_cache when running pytest to avoid test pollution',
-    long_description=LONG_DESCRIPTION,
+    long_description=README,
+    long_description_content_type='text/markdown',
+    url='https://github.com/ipwnponies/pytest-antilru',
     packages=find_packages(exclude=['tests']),
     install_requires=[
         'pytest',

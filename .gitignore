@@ -3,6 +3,7 @@
 
 /.cache/
 /.tox/
+/build/
 /dist/
 /pytest_antilru.egg-info/
 /venv/
