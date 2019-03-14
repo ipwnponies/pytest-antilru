@@ -18,5 +18,6 @@ script:
   # We probably don't need to run this for every environment. Probably shouldn't. I'll fix it if it becomes a problem
   - tox -e project_tests
 cache:
-  - $HOME/.cache/pip
-  - $HOME/.cache/pre-commit
+  pip: true
+  directories:
+    - $HOME/.cache/pre-commit
