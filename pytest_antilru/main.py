@@ -29,7 +29,7 @@ def pytest_collection(session):  # pylint: disable=unused-argument
     old_lru_cache = functools.lru_cache
 
     @wraps(functools.lru_cache)
-    def lru_cache_wrapper(*args, **kwargs):  # type: ignore
+    def lru_cache_wrapper(*args, **kwargs):
         """Wrap lru_cache decorator, to track which functions are decorated."""
 
         # Apply lru_cache params (maxsize, typed)
@@ -37,7 +37,7 @@ def pytest_collection(session):  # pylint: disable=unused-argument
 
         # Mimicking lru_cache: https://github.com/python/cpython/blob/v3.7.2/Lib/functools.py#L476-L478
         @wraps(decorated_function)
-        def decorating_function(user_function):  # type: ignore
+        def decorating_function(user_function):
             """Wraps the user function, which is what everyone is actually using. Including us."""
             wrapper = decorated_function(user_function)
             CACHED_FUNCTIONS.append(wrapper)
@@ -46,8 +46,12 @@ def pytest_collection(session):  # pylint: disable=unused-argument
         return decorating_function
 
     # Monkey patch the wrapped lru_cache decorator
-    functools.lru_cache = lru_cache_wrapper  # type: ignore
+    functools.lru_cache = lru_cache_wrapper
+
     yield
+
+    # Be a good citizen and undo our monkeying
+    functools.lru_cache = old_lru_cache
 
 
 @pytest.hookimpl(hookwrapper=True)
