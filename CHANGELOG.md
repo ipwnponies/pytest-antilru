@@ -2,9 +2,13 @@
 
 ## Unreleased
 
+## [0.2.1] - 2019-03-13
+
+[0.2.1]: https://github.com/ipwnponies/pytest-antilru/releases/tag/v0.2.1
+
 ### Changed
 
-* Code quality improvements, only warrants a patch
+* Minor code quality improvements
 
 ## [0.2.0] - 2019-03-12
 
