@@ -1,8 +1,10 @@
 # pytest-antilru
 
 [![Build Status]](https://travis-ci.com/ipwnponies/pytest-antilru)
+[![Coverage Status]](https://coveralls.io/github/ipwnponies/pytest-antilru?branch=master)
 
 [Build Status]: https://travis-ci.com/ipwnponies/pytest-antilru.svg?branch=master
+[Coverage Status]: https://coveralls.io/repos/github/ipwnponies/pytest-antilru/badge.svg?branch=master
 
 Caching expensive function calls with `functools.lru_cache` is simple and great performance optimization.
 It works so well that it'll even speed up your unit test runs!
