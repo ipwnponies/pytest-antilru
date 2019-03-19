@@ -7,7 +7,7 @@ python:
   - '3.5'
   - '2.7'
 install:
-  - pip install tox
+  - pip install tox coveralls
   - make venv
 script:
   # Travis only supports one python version per environment (pyenv).Tox doesn't support running all permutations of a
@@ -17,6 +17,8 @@ script:
   - tox
   # We probably don't need to run this for every environment. Probably shouldn't. I'll fix it if it becomes a problem
   - tox -e project_tests
+after_success:
+  - coveralls
 cache:
   pip: true
   directories:
