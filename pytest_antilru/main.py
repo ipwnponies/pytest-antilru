@@ -5,7 +5,7 @@ from functools import wraps  # pylint: disable=ungrouped-imports
 
 import pytest
 
-if not hasattr(functools, 'lru_cache'):
+if not hasattr(functools, 'lru_cache'):  # pragma: no cover
     # Several py2 backport packages
     try:
         import backports.functools_lru_cache as functools
