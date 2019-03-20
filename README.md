@@ -2,6 +2,10 @@
 
 [![Build Status]](https://travis-ci.com/ipwnponies/pytest-antilru)
 [![Coverage Status](https://coveralls.io/repos/github/ipwnponies/pytest-antilru/badge.svg?branch=master)](https://coveralls.io/github/ipwnponies/pytest-antilru?branch=master)
+![license](https://img.shields.io/github/license/ipwnponies/pytest-antilru.svg)
+![supported python versions](https://img.shields.io/pypi/pyversions/pytest-antilru.svg)
+![pypi wheels](https://img.shields.io/pypi/wheel/pytest-antilru.svg)
+![pypi development status](https://img.shields.io/pypi/status/pytest-antilru.svg)
 
 [Build Status]: https://travis-ci.com/ipwnponies/pytest-antilru.svg?branch=master
 
