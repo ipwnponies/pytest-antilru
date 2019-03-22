@@ -25,7 +25,6 @@ repos:
   - id: fix-encoding-pragma
     args:
     - --remove
-  - id: flake8
   - id: forbid-new-submodules
   - id: mixed-line-ending
   - id: name-tests-test
