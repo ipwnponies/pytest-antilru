@@ -17,7 +17,7 @@ else:
 setup(
     name='pytest-antilru',
     license='MIT',
-    version='0.2.1.post1',
+    version='1.0.0',
     description='Bust functools.lru_cache when running pytest to avoid test pollution',
     long_description=README,
     long_description_content_type='text/markdown',
@@ -28,7 +28,7 @@ setup(
     ],
     entry_points={'pytest11': ['name_of_plugin = pytest_antilru.main']},
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Framework :: Pytest',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 2',

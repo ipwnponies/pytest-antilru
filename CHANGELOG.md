@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## [1.0.0] - 2019-04-10
+
+[0.2.1]: https://github.com/ipwnponies/pytest-antilru/releases/tag/v1.0.0
+
+No changes in this release, this is going gold!
+
 ## [0.2.1] - 2019-03-13
 
 [0.2.1]: https://github.com/ipwnponies/pytest-antilru/releases/tag/v0.2.1
