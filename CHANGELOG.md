@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## [1.0.5] - 2019-04-10
+
+[1.0.5]: https://github.com/ipwnponies/pytest-antilru/releases/tag/v1.0.5
+
+Literally no change since 1.0.0.
+This release is for versioning reasons with the original, to-be-deprecated internal package.
+
 ## [1.0.0] - 2019-04-10
 
 [0.2.1]: https://github.com/ipwnponies/pytest-antilru/releases/tag/v1.0.0
