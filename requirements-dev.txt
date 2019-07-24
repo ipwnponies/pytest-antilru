@@ -1,3 +1,4 @@
+black
 flake8
 ipython
 pre-commit

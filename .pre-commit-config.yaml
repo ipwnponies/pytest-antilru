@@ -3,7 +3,7 @@ exclude: ^bin/
 fail_fast: true
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v1.2.3
+  rev: v2.2.3
   hooks:
   - id: autopep8-wrapper
   - id: check-added-large-files
@@ -38,11 +38,11 @@ repos:
   - id: sort-simple-yaml
   - id: trailing-whitespace
 - repo: https://github.com/asottile/reorder_python_imports
-  rev: v1.0.1
+  rev: v1.6.1
   hooks:
   - id: reorder-python-imports
 - repo: https://github.com/asottile/add-trailing-comma
-  rev: v0.6.4
+  rev: v1.4.1
   hooks:
   - id: add-trailing-comma
 - repo: local
@@ -53,10 +53,15 @@ repos:
     language: system
     types: [python]
 - repo: https://github.com/pre-commit/mirrors-autopep8
-  sha: v1.4.3
+  rev: v1.4.4
   hooks:
   - id: autopep8
 - repo: https://github.com/PyCQA/flake8
-  sha: 3.7.5
+  rev: 3.7.8
   hooks:
   - id: flake8
+- repo: https://github.com/python/black
+  rev: 19.3b0
+  hooks:
+  - id: black
+    language_version: python3.6
