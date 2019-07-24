@@ -1,11 +1,12 @@
 ---
+default_language_version:
+  python: python3.7
 exclude: ^bin/
 fail_fast: true
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v2.2.3
   hooks:
-  - id: autopep8-wrapper
   - id: check-added-large-files
   - id: check-byte-order-marker
   - id: check-case-conflict
@@ -41,10 +42,6 @@ repos:
   rev: v1.6.1
   hooks:
   - id: reorder-python-imports
-- repo: https://github.com/asottile/add-trailing-comma
-  rev: v1.4.1
-  hooks:
-  - id: add-trailing-comma
 - repo: local
   hooks:
   - id: pylint
@@ -64,4 +61,3 @@ repos:
   rev: 19.3b0
   hooks:
   - id: black
-    language_version: python3.6
