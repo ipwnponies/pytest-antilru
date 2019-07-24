@@ -23,9 +23,7 @@ setup(
     long_description_content_type='text/markdown',
     url='https://github.com/ipwnponies/pytest-antilru',
     packages=find_packages(exclude=['tests']),
-    install_requires=[
-        'pytest',
-    ],
+    install_requires=['pytest'],
     entry_points={'pytest11': ['name_of_plugin = pytest_antilru.main']},
     classifiers=[
         'Development Status :: 5 - Production/Stable',

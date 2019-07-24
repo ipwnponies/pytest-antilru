@@ -1,4 +1,5 @@
 import sys
+
 try:
     from functools import lru_cache
 except ImportError:
