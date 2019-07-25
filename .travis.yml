@@ -15,8 +15,7 @@ script:
   - export PY_VERSION=$(echo "${TRAVIS_PYTHON_VERSION}" | sed 's/\.//')
   - export TOXENV=$(tox --listenvs | grep "py${PY_VERSION}-" | tr '\n' ',')
   - tox
-  # We probably don't need to run this for every environment. Probably shouldn't. I'll fix it if it becomes a problem
-  - tox -e project_tests
+  - if test "$TRAVIS_PYTHON_VERSION" == '3.7'; then tox -e project_tests; fi
 after_success:
   - coveralls
 cache:
