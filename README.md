@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.com/ipwnponies/pytest-antilru.svg?branch=master)](https://travis-ci.com/ipwnponies/pytest-antilru)
 [![Coverage Status](https://img.shields.io/coveralls/github/ipwnponies/pytest-antilru.svg)](https://coveralls.io/github/ipwnponies/pytest-antilru?branch=master)
 ![license](https://img.shields.io/github/license/ipwnponies/pytest-antilru.svg)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 ![supported python versions](https://img.shields.io/pypi/pyversions/pytest-antilru.svg)
 ![pypi wheels](https://img.shields.io/pypi/wheel/pytest-antilru.svg)
 ![pypi development status](https://img.shields.io/pypi/status/pytest-antilru.svg)
