@@ -200,7 +200,7 @@ def exec_scratch_virtualenv(args):
         scratch_python = venv_python(scratch.venv)
         # TODO: do we allow user-defined override of which version of virtualenv to install?
         tmp = scratch.src + '.tmp'
-        run((scratch_python, '-m', 'pip.__main__', 'install', 'virtualenv', '--target', tmp))
+        run((scratch_python, '-m', 'pip.__main__', 'install', 'virtualenv<20', '--target', tmp))
 
         from os import rename
         rename(tmp, scratch.src)
