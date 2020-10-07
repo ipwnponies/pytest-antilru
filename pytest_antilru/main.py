@@ -5,8 +5,14 @@ from functools import wraps  # pylint: disable=ungrouped-imports
 
 import pytest
 
-if not hasattr(functools, 'lru_cache'):  # pragma: no cover
-    # Several py2 backport packages
+# Python 3.2 introduced lru_cache to functools
+IS_PY3 = hasattr(functools, 'lru_cache')
+
+if not IS_PY3:  # pragma: no cover
+    # Ignore linting and test coverage for this py2 only code section
+    # pylint: disable=raise-missing-from
+
+    # There are several py2 backport packages to attempt to load
     try:
         import backports.functools_lru_cache as functools
     except ImportError:

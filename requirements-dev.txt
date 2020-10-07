@@ -1,5 +1,7 @@
 black; python_version >= '3.6'
 flake8
+# tox constraint
+importlib-metadata < 2
 ipython
 pre-commit
 pudb
