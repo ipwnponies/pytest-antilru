@@ -1,4 +1,4 @@
-import sys
+from io import open
 from os import path
 
 from setuptools import find_packages
@@ -6,12 +6,8 @@ from setuptools import setup
 
 
 THIS_DIRECTORY = path.abspath(path.dirname(__file__))
-if sys.version_info[0] >= 3:
-    with open(path.join(THIS_DIRECTORY, 'README.md'), encoding='utf-8') as f:
-        README = f.read()
-else:
-    with open(path.join(THIS_DIRECTORY, 'README.md')) as f:
-        README = f.read().decode('utf-8')
+with open(path.join(THIS_DIRECTORY, 'README.md'), encoding='utf-8') as f:
+    README = f.read()
 
 
 setup(

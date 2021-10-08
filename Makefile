@@ -17,4 +17,4 @@ test: venv
 .PHONY: clean
 clean: ## Clean working directory
 	find . -iname '*.pyc' | xargs rm -f
-	rm -rf ./venv
+	rm -rf ./venv/ ./.tox/ ./.coverage build/ ./dist/ ./pytest_antilru.egg-info/
