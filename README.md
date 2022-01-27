@@ -49,7 +49,16 @@ mock, the results are already cached. Now trying running those two test out-of-o
 
 Since this is a `pytest` plugin, you need to be using `pytest` to run your tests.
 
-This project is python 2.7 and python 3.5, 3.6, 3.7 compatible.
+## Compatibility
+
+This project is python 2.7 and python 3.5+ compatible.
+It is compatible with pytest 2+.
+While we aim to support a wide range of python and pytest combinations, pytest only supports the latest release:
+they do not patch older releases to work with newer python versions.
+See [tox.ini] for the full envlist of what is being tested.
+
+If you experience issues, please check for compatibility between your python and pytest target versions.
+Open an issue once these are verified.
 
 ## Installation
 

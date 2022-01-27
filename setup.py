@@ -19,7 +19,7 @@ setup(
     long_description_content_type='text/markdown',
     url='https://github.com/ipwnponies/pytest-antilru',
     packages=find_packages(exclude=['tests']),
-    install_requires=['pytest'],
+    install_requires=['pytest', 'pytest<5; python_version<"3"'],
     entry_points={'pytest11': ['name_of_plugin = pytest_antilru.main']},
     classifiers=[
         'Development Status :: 5 - Production/Stable',
@@ -31,5 +31,7 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
     ],
 )
