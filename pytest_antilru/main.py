@@ -1,6 +1,8 @@
 # Please don't use this, it's inconsistent and will be monkey-patched left and right.
 # We're only importing it to update functools module's reference
 import functools
+import logging
+import sys
 from functools import wraps  # pylint: disable=ungrouped-imports
 
 import pytest
@@ -34,19 +36,34 @@ def pytest_collection(session):  # pylint: disable=unused-argument
     old_lru_cache = functools.lru_cache
 
     @wraps(functools.lru_cache)
-    def lru_cache_wrapper(*args, **kwargs):
+    def lru_cache_wrapper(maxsize=Ellipsis, typed=Ellipsis, **kwargs):
         """Wrap lru_cache decorator, to track which functions are decorated."""
 
-        # Apply lru_cache params (maxsize, typed)
-        decorated_function = old_lru_cache(*args, **kwargs)
+        if kwargs:
+            logging.warning('Unexpected kwargs, maybe an update in functools.lru_cache')
 
-        # Mimicking lru_cache: https://github.com/python/cpython/blob/v3.7.2/Lib/functools.py#L476-L478
-        @wraps(decorated_function)
-        def decorating_function(user_function):
-            """Wraps the user function, which is what everyone is actually using. Including us."""
-            wrapper = decorated_function(user_function)
+        # User function is passed directly to decorator (skip decorator params)
+        if callable(maxsize) and typed is Ellipsis and sys.version_info >= (3, 8):
+            user_function = maxsize
+            wrapper = old_lru_cache(user_function)
             CACHED_FUNCTIONS.append(wrapper)
             return wrapper
+
+        # Apply lru_cache params (maxsize, typed)
+        kwargs = {}
+        if maxsize is not Ellipsis:
+            kwargs['maxsize'] = maxsize
+        if typed is not Ellipsis:
+            kwargs['typed'] = typed
+        wrapper = old_lru_cache(**kwargs)
+
+        # Mimicking lru_cache: https://github.com/python/cpython/blob/v3.7.2/Lib/functools.py#L476-L478
+        @wraps(wrapper)
+        def decorating_function(user_function):
+            """Wraps the user function, which is what everyone is actually using. Including us."""
+            _wrapper = wrapper(user_function)
+            CACHED_FUNCTIONS.append(_wrapper)
+            return _wrapper
 
         return decorating_function
 
