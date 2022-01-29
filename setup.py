@@ -4,7 +4,6 @@ from os import path
 from setuptools import find_packages
 from setuptools import setup
 
-
 THIS_DIRECTORY = path.abspath(path.dirname(__file__))
 with open(path.join(THIS_DIRECTORY, 'README.md'), encoding='utf-8') as f:
     README = f.read()
@@ -13,7 +12,7 @@ with open(path.join(THIS_DIRECTORY, 'README.md'), encoding='utf-8') as f:
 setup(
     name='pytest-antilru',
     license='MIT',
-    version='1.0.5',
+    version='1.1.0',
     description='Bust functools.lru_cache when running pytest to avoid test pollution',
     long_description=README,
     long_description_content_type='text/markdown',

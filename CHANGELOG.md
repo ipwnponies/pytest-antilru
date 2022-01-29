@@ -2,6 +2,21 @@
 
 ## Unreleased
 
+## [1.1.0] - 2022-01-29
+
+Added support for python 3.8+.
+Python 3.8 functools.lru_cache added support for using as a plain decorator.
+
+```py
+@lru_cache()
+def oldway():
+  ...
+
+@lru_cache
+def newway():
+  ...
+```
+
 ## [1.0.5] - 2019-04-10
 
 [1.0.5]: https://github.com/ipwnponies/pytest-antilru/releases/tag/v1.0.5
