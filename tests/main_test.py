@@ -8,11 +8,6 @@ except ImportError:
     except ImportError:
         from functools32 import lru_cache
 
-try:
-    from unittest import mock
-except ImportError:
-    import mock
-
 
 def expensive_network_call():
     # Pretend this is an expensive network call.
@@ -37,12 +32,15 @@ class TestLruCacheExplicitParam:
         assert cache_me_lru_cache_explicit_param() == 1
 
     @staticmethod
-    def test_b_run_second():
+    def test_b_run_second(mocker):
         '''Run second, after env is dirtied.'''
         # We want to mock the network call for this test case
-        with mock.patch.object(sys.modules[__name__], 'expensive_network_call', return_value=2) as mock_network_call:
-            assert cache_me_lru_cache_explicit_param() == 2
-            assert mock_network_call.called
+        mock_network_call = mocker.patch.object(
+            sys.modules[__name__], 'expensive_network_call', return_value=2, autospec=True
+        )
+
+        assert cache_me_lru_cache_explicit_param() == 2
+        assert mock_network_call.called
 
 
 class TestLruCacheDefaultParam:
@@ -52,9 +50,12 @@ class TestLruCacheDefaultParam:
         assert cache_me_default_param() == 1
 
     @staticmethod
-    def test_b_run_second():
+    def test_b_run_second(mocker):
         '''Run second, after env is dirtied.'''
         # We want to mock the network call for this test case
-        with mock.patch.object(sys.modules[__name__], 'expensive_network_call', return_value=2) as mock_network_call:
-            assert cache_me_default_param() == 2
-            assert mock_network_call.called
+        mock_network_call = mocker.patch.object(
+            sys.modules[__name__], 'expensive_network_call', return_value=2, autospec=True
+        )
+
+        assert cache_me_default_param() == 2
+        assert mock_network_call.called
