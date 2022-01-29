@@ -1,5 +1,7 @@
 import sys
 
+from pytest_antilru import main
+
 try:
     from functools import lru_cache
 except ImportError:
@@ -59,3 +61,14 @@ class TestLruCacheDefaultParam:
 
         assert cache_me_default_param() == 2
         assert mock_network_call.called
+
+
+def test_lru_cache_unknown_kwargs(mocker):
+    '''Test that warning is emitted when new kwargs are added to lru_cache.
+
+    Let's hope somene reports the warning and we can get to patching.
+    '''
+    spy = mocker.spy(main.logging, 'warning')
+    lru_cache(new_feature=1)(expensive_network_call)
+
+    assert spy.called
