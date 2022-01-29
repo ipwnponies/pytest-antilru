@@ -8,14 +8,22 @@ python:
   - '2.7'
 install:
   - pip install tox coveralls
-  - make venv
 script:
   # Travis only supports one python version per environment (pyenv).Tox doesn't support running all permutations of a
   # factor. They found each other, though the magic of grep and sed.
   - export PY_VERSION=$(echo "${TRAVIS_PYTHON_VERSION}" | sed 's/\.//')
   - export TOXENV=$(tox --listenvs | grep "py${PY_VERSION}-" | tr '\n' ',')
   - tox
-  - if test "$TRAVIS_PYTHON_VERSION" == '3.7'; then tox -e project_tests; fi
+jobs:
+  include:
+    - name: project_tests
+      language: python
+      python: 3.7
+      install:
+        - pip install tox
+        - make venv
+      script:
+        - tox -e project_tests
 after_success:
   - coveralls
 cache:
