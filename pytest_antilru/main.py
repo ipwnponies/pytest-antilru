@@ -43,7 +43,7 @@ def pytest_collection(session):  # pylint: disable=unused-argument
             logging.warning('Unexpected kwargs, maybe an update in functools.lru_cache')
 
         # User function is passed directly to decorator (skip decorator params)
-        if callable(maxsize) and typed is Ellipsis and sys.version_info >= (3, 8):
+        if callable(maxsize) and typed is Ellipsis and sys.version_info >= (3, 8):  # pragma: no_cover_lt_py38
             user_function = maxsize
             wrapper = old_lru_cache(user_function)
             CACHED_FUNCTIONS.append(wrapper)
@@ -53,7 +53,7 @@ def pytest_collection(session):  # pylint: disable=unused-argument
         kwargs = {}
         if maxsize is not Ellipsis:
             kwargs['maxsize'] = maxsize
-        if typed is not Ellipsis:
+        if typed is not Ellipsis:  # pragma: no_cover_lt_py38
             kwargs['typed'] = typed
         wrapper = old_lru_cache(**kwargs)
 

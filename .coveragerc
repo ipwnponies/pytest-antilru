@@ -13,6 +13,7 @@ omit =
 skip_covered = True
 show_missing = True
 exclude_lines =
+    pragma: no_cover_${PRAGMA_VERSION}$
     # Have to re-enable the standard pragma
     \#\s*pragma: no cover
 

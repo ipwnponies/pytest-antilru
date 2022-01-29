@@ -7,6 +7,5 @@ pre-commit
 pudb
 pylint
 pytest
-pytest-mock
 tox
 tox-pip-extensions
