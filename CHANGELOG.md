@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## [1.1.1] - 2022-07-05
+
+Fixed pytest plugin name https://github.com/ipwnponies/pytest-antilru/pull/23
+This was registering as *name_of_plugin* in pytest (from plugin example): besides being incorrect, it readily conflicts
+with plugins who made the same mistake.
+
+Thanks for @Kache for noticing and contributing a fix!
+
 ## [1.1.0] - 2022-01-29
 
 Added support for python 3.8+.

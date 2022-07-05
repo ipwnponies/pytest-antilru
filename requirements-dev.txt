@@ -1,7 +1,6 @@
 black; python_version >= '3.6'
 flake8
-# tox constraint
-importlib-metadata < 2
+importlib-metadata
 ipython
 pre-commit
 pudb
@@ -9,3 +8,4 @@ pylint
 pytest
 tox
 tox-pip-extensions
+twine
