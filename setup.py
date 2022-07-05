@@ -12,7 +12,7 @@ with open(path.join(THIS_DIRECTORY, 'README.md'), encoding='utf-8') as f:
 setup(
     name='pytest-antilru',
     license='MIT',
-    version='1.1.0',
+    version='1.1.1',
     description='Bust functools.lru_cache when running pytest to avoid test pollution',
     long_description=README,
     long_description_content_type='text/markdown',
