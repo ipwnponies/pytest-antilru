@@ -46,7 +46,7 @@ repos:
   hooks:
   - id: pylint
     name: Pylint
-    entry: venv/bin/pylint
+    entry: .venv/bin/pylint
     language: system
     types: [python]
 - repo: https://github.com/pre-commit/mirrors-autopep8

@@ -1,20 +1,18 @@
 .DEFAULT_GOAL := test
+INSTALL_STAMP := .venv/venv.touch
 
 .PHONY: venv
-venv:
-	bin/venv_update.py \
-		venv= -p python3 venv \
-		install= -r requirements-dev.txt \
-		bootstrap-deps= -r requirements-bootstrap.txt \
-		pip-command= pip-faster install --upgrade --prune -e . \
-		>/dev/null
-	venv/bin/pre-commit install
+venv: $(INSTALL_STAMP)
+
+$(INSTALL_STAMP): pyproject.toml poetry.lock
+	poetry install --remove-untracked
+	.venv/bin/pre-commit install
 
 .PHONY: test
-test: venv
-	venv/bin/tox
+test: $(INSTALL_STAMP)
+	.venv/bin/tox
 
 .PHONY: clean
 clean: ## Clean working directory
 	find . -iname '*.pyc' | xargs rm -f
-	rm -rf ./venv/ ./.tox/ ./.coverage build/ ./dist/ ./pytest_antilru.egg-info/
+	rm -rf ./.venv/ ./.tox/ ./.coverage build/ ./dist/ ./pytest_antilru.egg-info/
