@@ -46,7 +46,7 @@ repos:
   hooks:
   - id: pylint
     name: Pylint
-    entry: venv/bin/pylint
+    entry: .venv/bin/pylint
     language: system
     types: [python]
 - repo: https://github.com/pre-commit/mirrors-autopep8
@@ -58,6 +58,6 @@ repos:
   hooks:
   - id: flake8
 - repo: https://github.com/python/black
-  rev: 19.3b0
+  rev: 22.3.0
   hooks:
   - id: black
