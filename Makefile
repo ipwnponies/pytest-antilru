@@ -8,6 +8,10 @@ $(INSTALL_STAMP): pyproject.toml poetry.lock
 	poetry install --remove-untracked
 	.venv/bin/pre-commit install
 
+.PHONY: publish
+publish:
+	poetry publish --build
+
 .PHONY: test
 test: $(INSTALL_STAMP)
 	.venv/bin/tox
