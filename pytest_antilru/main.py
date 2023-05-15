@@ -9,8 +9,8 @@ import pytest
 CACHED_FUNCTIONS = []
 
 
-@pytest.hookimpl(hookwrapper=True)
-def pytest_collection(session):  # pylint: disable=unused-argument
+@pytest.hookimpl(tryfirst=True, hookwrapper=True)
+def pytest_load_initial_conftests(early_config, parser, args):  # pylint: disable=unused-argument
     """Monkey patch lru_cache, before any module imports occur."""
 
     # Gotta hold on to this before we patch it away
