@@ -13,6 +13,8 @@ old_lru_cache = None
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_load_initial_conftests(early_config, parser, args):  # pylint: disable=unused-argument
     """Monkey patch lru_cache, before any module imports occur."""
+    parser.addini("lru_cache_disabled", ".", type="linelist")
+    lru_cache_disabled_modules = early_config.getini("lru_cache_disabled")
 
     # Gotta hold on to this before we patch it away
     global old_lru_cache
@@ -45,7 +47,13 @@ def pytest_load_initial_conftests(early_config, parser, args):  # pylint: disabl
         def decorating_function(user_function):
             """Wraps the user function, which is what everyone is actually using. Including us."""
             _wrapper = wrapper(user_function)
-            CACHED_FUNCTIONS.append(_wrapper)
+            if lru_cache_disabled_modules:
+                for module_path in lru_cache_disabled_modules:
+                    if user_function.__module__.startswith(module_path):
+                        CACHED_FUNCTIONS.append(_wrapper)
+                        break
+            else:
+                CACHED_FUNCTIONS.append(_wrapper)
             return _wrapper
 
         return decorating_function
