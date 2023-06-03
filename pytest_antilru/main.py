@@ -7,6 +7,7 @@ from functools import wraps  # pylint: disable=ungrouped-imports
 import pytest
 
 CACHED_FUNCTIONS = []
+old_lru_cache = None
 
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
@@ -14,6 +15,7 @@ def pytest_load_initial_conftests(early_config, parser, args):  # pylint: disabl
     """Monkey patch lru_cache, before any module imports occur."""
 
     # Gotta hold on to this before we patch it away
+    global old_lru_cache
     old_lru_cache = functools.lru_cache
 
     @wraps(functools.lru_cache)
@@ -53,6 +55,10 @@ def pytest_load_initial_conftests(early_config, parser, args):  # pylint: disabl
 
     yield
 
+
+@pytest.hookimpl(hookwrapper=True)
+def pytest_collection(session):
+    yield
     # Be a good citizen and undo our monkeying
     functools.lru_cache = old_lru_cache
 
