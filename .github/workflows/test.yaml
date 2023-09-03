@@ -3,7 +3,10 @@
 
 name: Python package
 
-on: push
+on:
+  push:
+  schedule:
+    - cron: '0 2 * * SAT'
 
 jobs:
   build:
@@ -13,7 +16,6 @@ jobs:
       fail-fast: false
       matrix:
         python-version:
-          - "2.7"
           - "3.5"
           - "3.6"
           - "3.7"
@@ -21,8 +23,6 @@ jobs:
           - "3.9"
         include:
           - os: ubuntu-latest
-          - os: ubuntu-20.04
-            python-version: "2.7"
           - os: ubuntu-20.04
             python-version: "3.5"
           - os: ubuntu-20.04
