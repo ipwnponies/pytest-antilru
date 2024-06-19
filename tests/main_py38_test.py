@@ -1,19 +1,8 @@
 import sys
+from functools import lru_cache
+from unittest import mock
 
 from pytest_antilru import main
-
-try:
-    from functools import lru_cache
-except ImportError:
-    try:
-        from backports.functools_lru_cache import lru_cache
-    except ImportError:
-        from functools32 import lru_cache
-
-try:
-    from unittest import mock
-except ImportError:
-    import mock
 
 
 def expensive_network_call():

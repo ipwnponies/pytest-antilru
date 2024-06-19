@@ -2,28 +2,9 @@
 # We're only importing it to update functools module's reference
 import functools
 import logging
-import sys
 from functools import wraps  # pylint: disable=ungrouped-imports
 
 import pytest
-
-# Python 3.2 introduced lru_cache to functools
-IS_PY3 = hasattr(functools, 'lru_cache')
-
-if not IS_PY3:  # pragma: no cover
-    # Ignore linting and test coverage for this py2 only code section
-    # pylint: disable=raise-missing-from
-
-    # There are several py2 backport packages to attempt to load
-    try:
-        import backports.functools_lru_cache as functools
-    except ImportError:
-        # functools32 py2 backport
-        try:
-            import functools32 as functools
-        except ImportError:
-            raise AssertionError('Cannot use pytest-antilru, no lru_cache installed!')
-
 
 CACHED_FUNCTIONS = []
 
@@ -43,7 +24,7 @@ def pytest_collection(session):  # pylint: disable=unused-argument
             logging.warning('Unexpected kwargs, maybe an update in functools.lru_cache')
 
         # User function is passed directly to decorator (skip decorator params)
-        if callable(maxsize) and typed is Ellipsis and sys.version_info >= (3, 8):  # pragma: no_cover_lt_py38
+        if callable(maxsize) and typed is Ellipsis:
             user_function = maxsize
             wrapper = old_lru_cache(user_function)
             CACHED_FUNCTIONS.append(wrapper)

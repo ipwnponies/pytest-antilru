@@ -51,8 +51,10 @@ Since this is a `pytest` plugin, you need to be using `pytest` to run your tests
 
 ## Compatibility
 
-This project is python 2.7 and python 3.5+ compatible.
-It is compatible with pytest 2+.
+Starting from v2+, this project supports python 3.8+ and pytest 3+.
+
+Older package releases exist to support python 2.7 to 3.7, from pytest 2-7.
+
 While we aim to support a wide range of python and pytest combinations, pytest only supports the latest release:
 they do not patch older releases to work with newer python versions.
 See [tox.ini] for the full envlist of what is being tested.
@@ -74,7 +76,7 @@ pip install pytest-antilru
 make test
 ```
 
-----
+---
 
 ## Credits and references
 
