@@ -34,7 +34,7 @@ def pytest_collection(session):  # pylint: disable=unused-argument
         kwargs = {}
         if maxsize is not Ellipsis:
             kwargs['maxsize'] = maxsize
-        if typed is not Ellipsis:  # pragma: no_cover_lt_py38
+        if typed is not Ellipsis:
             kwargs['typed'] = typed
         wrapper = old_lru_cache(**kwargs)
 
