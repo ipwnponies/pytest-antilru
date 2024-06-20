@@ -14,9 +14,9 @@ relative_files = True
 skip_covered = True
 show_missing = True
 exclude_lines =
-    pragma: no_cover_${PRAGMA_VERSION}$
+    \#\s*pragma: no cover ${PRAGMA_VERSION}$
     # Have to re-enable the standard pragma
-    \#\s*pragma: no cover
+    \#\s*pragma: no cover$
 
     # Don't complain if tests don't hit defensive assertion code:
     ^\s*raise AssertionError\b
