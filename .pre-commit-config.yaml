@@ -42,13 +42,6 @@ repos:
   rev: v1.6.1
   hooks:
   - id: reorder-python-imports
-- repo: local
-  hooks:
-  - id: pylint
-    name: Pylint
-    entry: .venv/bin/pylint
-    language: system
-    types: [python]
 - repo: https://github.com/pre-commit/mirrors-autopep8
   rev: v1.4.4
   hooks:
