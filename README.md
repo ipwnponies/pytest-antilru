@@ -70,6 +70,31 @@ Simply install this in the same python environment that `pytest` uses and the re
 pip install pytest-antilru
 ```
 
+## Configuration
+
+Add this where ever [your pytest configurations](https://docs.pytest.org/en/stable/reference/customize.html) live.
+
+### `lru_cache_disabled`
+
+`lru_cache_disabled` is an allowlist of module paths to disable `lru_cache` for.
+This allows you to target disable caching for specific modules that are causing test pollution.
+
+The default behaviour of `pytest-antilru` is to disable `lru_cache` everywhere.
+However, this can interfere with other dependencies that are reliant on `lru_cache` behaviour to behave correctly
+within the same test run.
+
+```ini
+[tool.pytest.ini_options]
+lru_cache_disabled = '''
+    my_module.util
+    my_module.client_lib.database
+    '''
+```
+
+In this example, any usage of `lru_cache` in a file inside `my_module.util` or `my_module.client_lib.database`
+will be disabled.
+All other instances will continue to be cached within a test run.
+
 ## How to test the software
 
 ```sh
