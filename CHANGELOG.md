@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+## [2.0.0] - 2024-07-28
+
+Add `lru_cache_disabled` pytest config option, which is an allowlist to selectively apply anti lru on specific
+modules.
+https://github.com/ipwnponies/pytest-antilru/pull/35
+
+Dropped support for python 2.7, 3.5 to 3.7.
+Added support for python 3.10 to 3.13.
+
 ## [1.1.1] - 2022-07-05
 
 Fixed pytest plugin name https://github.com/ipwnponies/pytest-antilru/pull/23
