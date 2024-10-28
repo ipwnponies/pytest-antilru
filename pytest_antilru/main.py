@@ -47,7 +47,7 @@ def pytest_load_initial_conftests(early_config, parser, args):  # pylint: disabl
         def decorating_function(user_function):
             """Wraps the user function, which is what everyone is actually using. Including us."""
             _wrapper = wrapper(user_function)
-            if lru_cache_disabled_modules:  # pragma: no cover
+            if lru_cache_disabled_modules:
                 for module_path in lru_cache_disabled_modules:
                     if user_function.__module__.startswith(module_path):
                         CACHED_FUNCTIONS.append(_wrapper)
