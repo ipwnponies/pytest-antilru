@@ -1,12 +1,25 @@
 # pytest-antilru
 
-[![Build Status](https://github.com/ipwnponies/pytest-antilru/actions/workflows/test.yaml/badge.svg)](https://github.com/ipwnponies/pytest-antilru/actions/workflows/test.yaml?query=branch%3Amaster)
-[![Coverage Status](https://img.shields.io/coveralls/github/ipwnponies/pytest-antilru.svg)](https://coveralls.io/github/ipwnponies/pytest-antilru?branch=master)
+![supported python versions](https://img.shields.io/pypi/pyversions/pytest-antilru)
 ![license](https://img.shields.io/github/license/ipwnponies/pytest-antilru.svg)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
-![supported python versions](https://img.shields.io/pypi/pyversions/pytest-antilru.svg)
+
+[![Build Status](https://github.com/ipwnponies/pytest-antilru/actions/workflows/test.yaml/badge.svg)](https://github.com/ipwnponies/pytest-antilru/actions/workflows/test.yaml?query=branch%3Amaster)
+[![Coverage Status](https://img.shields.io/coveralls/github/ipwnponies/pytest-antilru.svg)](https://coveralls.io/github/ipwnponies/pytest-antilru?branch=master)
+
+<details>
+    <summary>More badges</summary>
+
+![latest version available on PyPI](https://img.shields.io/pypi/v/pytest-antilru)
 ![pypi wheels](https://img.shields.io/pypi/wheel/pytest-antilru.svg)
-![pypi development status](https://img.shields.io/pypi/status/pytest-antilru.svg)
+![PyPI download count](https://img.shields.io/pypi/dm/pytest-antilru)
+
+![open issues](https://img.shields.io/github/issues/ipwnponies/pytest-antilru)
+![number of files](https://img.shields.io/github/directory-file-count/ipwnponies/pytest-antilru)
+![code size](https://img.shields.io/github/languages/code-size/ipwnponies/pytest-antilru)
+![repo size](https://img.shields.io/github/repo-size/ipwnponies/pytest-antilru)
+
+</details>
 
 Caching expensive function calls with `functools.lru_cache` is simple and great performance optimization.
 It works so well that it'll even speed up your unit test runs!
