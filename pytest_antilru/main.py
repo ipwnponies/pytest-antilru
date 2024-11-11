@@ -10,6 +10,16 @@ CACHED_FUNCTIONS = []
 old_lru_cache = None
 
 
+def cache_user_function(user_function, wrapper, lru_cache_disabled_modules: bool):
+    if lru_cache_disabled_modules:
+        for module_path in lru_cache_disabled_modules:
+            if user_function.__module__.startswith(module_path):
+                CACHED_FUNCTIONS.append(wrapper)
+                break
+    else:
+        CACHED_FUNCTIONS.append(wrapper)
+
+
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_load_initial_conftests(early_config, parser, args):  # pylint: disable=unused-argument
     """Monkey patch lru_cache, before any module imports occur."""
@@ -27,11 +37,11 @@ def pytest_load_initial_conftests(early_config, parser, args):  # pylint: disabl
         if kwargs:
             logging.warning('Unexpected kwargs, maybe an update in functools.lru_cache')
 
-        # User function is passed directly to decorator (skip decorator params)
+        # When decorator is called without params, user function is first arg (maxsize)
         if callable(maxsize) and typed is Ellipsis:
             user_function = maxsize
             wrapper = old_lru_cache(user_function)
-            CACHED_FUNCTIONS.append(wrapper)
+            cache_user_function(user_function, wrapper, lru_cache_disabled_modules)
             return wrapper
 
         # Apply lru_cache params (maxsize, typed)
@@ -47,13 +57,7 @@ def pytest_load_initial_conftests(early_config, parser, args):  # pylint: disabl
         def decorating_function(user_function):
             """Wraps the user function, which is what everyone is actually using. Including us."""
             _wrapper = wrapper(user_function)
-            if lru_cache_disabled_modules:
-                for module_path in lru_cache_disabled_modules:
-                    if user_function.__module__.startswith(module_path):
-                        CACHED_FUNCTIONS.append(_wrapper)
-                        break
-            else:
-                CACHED_FUNCTIONS.append(_wrapper)
+            cache_user_function(user_function, _wrapper, lru_cache_disabled_modules)
             return _wrapper
 
         return decorating_function
