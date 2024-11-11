@@ -1,4 +1,5 @@
 import sys
+from collections.abc import Callable
 from functools import lru_cache
 from unittest import mock
 
@@ -18,18 +19,28 @@ def cache_me_lru_cache():
     return expensive_network_call()
 
 
-def test_a_run_first():
+@lru_cache()
+def cache_me_empty_decorator_call():
+    return expensive_network_call()
+
+
+@pytest.fixture(params=[cache_me_lru_cache, cache_me_empty_decorator_call])
+def cache_function(request):
+    yield request.param
+
+
+def test_a_run_first(cache_function: Callable):
     '''Run this test first, to pollute the test environment.'''
-    assert cache_me_lru_cache() == 1
+    assert cache_function() == 1
 
 
-def test_b_run_second():
+def test_b_run_second(cache_function: Callable):
     '''Run second, after env is dirtied.'''
     # We want to mock the network call for this test case
     with mock.patch.object(
         sys.modules[__name__], 'expensive_network_call', return_value=2, autospec=True
     ) as mock_network_call:
-        assert cache_me_lru_cache() == 2
+        assert cache_function() == 2
         assert mock_network_call.called
 
 
@@ -61,10 +72,10 @@ class TestParameters:
         }
 
     @pytest.mark.skipif(sys.version_info < (3, 9), reason='cache_parameters added to Python 3.9')
-    def test_default_parameters(self):  # pragma: no cover <python39
+    def test_default_parameters(self, cache_function: Callable):  # pragma: no cover <python39
         '''Test the default parameter is wrapped correctly.'''
 
-        assert cache_me_lru_cache.cache_parameters() == {
+        assert cache_function.cache_parameters() == {
             'maxsize': 128,
             'typed': False,
         }
