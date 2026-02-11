@@ -1,42 +1,44 @@
-[tool.poetry]
+[project]
 name = "pytest-antilru"
 version = "2.0.0"
 description = "Bust functools.lru_cache when running pytest to avoid test pollution"
 license = "MIT"
-authors = ["John Nguyen <ipwnponies@gmail.com>"]
+authors = [{name = "John Nguyen", email = "ipwnponies@gmail.com"}]
 readme = "README.md"
-repository = "https://github.com/ipwnponies/pytest-antilru"
+requires-python = ">=3.8"
+dependencies = [
+    "pytest>=3,<9; python_version < '3.10'",
+    # python 3.10+ only supports newer pytest releases
+    "pytest>=7,<9; python_version >= '3.10'",
+]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Framework :: Pytest",
-    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
 ]
-include = [
-    "CHANGELOG.md"
+
+[project.urls]
+Repository = "https://github.com/ipwnponies/pytest-antilru"
+
+[project.entry-points.pytest11]
+antilru = "pytest_antilru.main"
+
+[dependency-groups]
+dev = [
+    "black; python_version == '3.14'",
+    "ipython; python_version == '3.14'",
+    "pudb; python_version == '3.14'",
+    "tox; python_version == '3.14'",
+    "pre-commit; python_version == '3.14'",
 ]
-
-[tool.poetry.dependencies]
-python = ">=3.8"
-pytest = [
-    # python 3.8 and 3.9 still have legacy support for pytest 3-6
-    {version = ">=7", python = ">=3.10"}
-]
-
-[tool.poetry.group.dev.dependencies]
-black = {version = "*", python = "==3.14"}
-ipython = {version = "*", python = "==3.14"}
-pudb = {version = "*", python = "==3.14"}
-tox = {version = "*", python = "==3.14"}
-pre-commit = {version = "*", python = "==3.14"}
-
-[tool.poetry.plugins."pytest11"]
-"antilru" = "pytest_antilru.main"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["pytest_antilru*"]
 
 [tool.black]
 line-length=120

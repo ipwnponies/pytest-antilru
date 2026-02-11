@@ -4,17 +4,23 @@ INSTALL_STAMP := .venv/venv.touch
 .PHONY: venv
 venv: $(INSTALL_STAMP)
 
-$(INSTALL_STAMP): pyproject.toml poetry.lock
-	poetry sync
-	.venv/bin/pre-commit install
+$(INSTALL_STAMP): pyproject.toml uv.lock
+	uv sync
+	uv run pre-commit install
+
+.PHONY: lock
+lock:
+	uv lock
+	poetry lock
 
 .PHONY: publish
 publish:
-	poetry publish --build
+	uv build
+	uv publish
 
 .PHONY: test
 test: $(INSTALL_STAMP)
-	.venv/bin/tox
+	uv run tox
 
 .PHONY: clean
 clean: ## Clean working directory

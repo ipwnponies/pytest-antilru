@@ -94,10 +94,20 @@ Recommended setup:
 uv sync
 ```
 
-`uv` is recommended, not required. If you prefer not to use `uv`, you can continue to use the existing Poetry + Makefile flow:
+The `Makefile` also uses `uv` under the hood, so these are equivalent:
 
 ```sh
 make venv
+```
+
+Poetry remains supported for legacy workflows, but is deprecated in favor of `uv`.
+When dependencies change, `make lock` runs both `uv` and `poetry` lock commands.
+
+Legacy Poetry commands:
+
+```sh
+poetry lock
+poetry sync
 ```
 
 ## Configuration
