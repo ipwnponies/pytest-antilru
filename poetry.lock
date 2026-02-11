@@ -499,22 +499,23 @@ files = [
 
 [[package]]
 name = "pudb"
-version = "2024.1.3"
+version = "2025.1.5"
 description = "A full-screen, console-based Python debugger"
 optional = false
 python-versions = "~=3.8"
 groups = ["dev"]
 markers = "python_version >= \"3.10\" and python_version < \"4.0\""
 files = [
-    {file = "pudb-2024.1.3-py3-none-any.whl", hash = "sha256:b1c64447fcee5848d0376231672b97ca8580ca6d3297c82cba6b0ba5bd5ee640"},
-    {file = "pudb-2024.1.3.tar.gz", hash = "sha256:264f239e0538e52e83d3d020143100b3171cae17227674bb1b9f8b075f34849c"},
+    {file = "pudb-2025.1.5-py3-none-any.whl", hash = "sha256:e40c69f102d534cc7b86020c0217e3d424ee81b14a229d068ac122089c301f59"},
+    {file = "pudb-2025.1.5.tar.gz", hash = "sha256:e6dedb81fc3c8cdcd66cf62e86337cb913570ebb2c994c9ab52012d059e086ad"},
 ]
 
 [package.dependencies]
 jedi = ">=0.18,<1"
 packaging = ">=20.0"
-pygments = ">=2.7.4"
-urwid = ">=2.4"
+pygments = ">=2.19"
+typing-extensions = ">=4.13"
+urwid = ">=2.5.1"
 urwid-readline = "*"
 
 [package.extras]
@@ -871,7 +872,7 @@ files = [
     {file = "typing_extensions-4.15.0-py3-none-any.whl", hash = "sha256:f0fa19c6845758ab08074a0cfa8b7aecb71c999ca73d62883bc25cc018c4e548"},
     {file = "typing_extensions-4.15.0.tar.gz", hash = "sha256:0cea48d173cc12fa28ecabc3b837ea3cf6f38c6d1136f85cbaaf598984861466"},
 ]
-markers = {main = "python_version == \"3.10\"", dev = "python_version >= \"3.10\" and python_version < \"3.12\""}
+markers = {main = "python_version == \"3.10\"", dev = "python_version >= \"3.10\" and python_version < \"4.0\""}
 
 [[package]]
 name = "urwid"
@@ -956,4 +957,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.8"
-content-hash = "acfef8fc394958738bf3c8918c512764ae9b0187e0ed4b4cbaffcb91a60f1437"
+content-hash = "3c76abac91e8eaac4965d5ac5d397a0d68d5bf6c77001bdf0ddce730fb45bc4f"
