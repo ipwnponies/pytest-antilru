@@ -28,7 +28,7 @@ pytest = [
 black = {version = "^24.4.2", python = "^3.10"}
 ipython = {version = "^8.26.0", python = "^3.10"}
 pudb = {version = "^2024.1.2", python = "^3.10"}
-tox = {version = "^4.16.0", python = "^3.10"}
+tox = {version = "*", python = "^3.10"}
 pre-commit = {version = "^3.7.1", python = "^3.10"}
 
 [tool.poetry.plugins."pytest11"]
