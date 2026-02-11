@@ -5,7 +5,7 @@ INSTALL_STAMP := .venv/venv.touch
 venv: $(INSTALL_STAMP)
 
 $(INSTALL_STAMP): pyproject.toml poetry.lock
-	poetry install --remove-untracked
+	poetry sync
 	.venv/bin/pre-commit install
 
 .PHONY: publish
