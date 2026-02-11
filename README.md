@@ -83,6 +83,23 @@ Simply install this in the same python environment that `pytest` uses and the re
 pip install pytest-antilru
 ```
 
+## Development setup
+
+The runtime support for this package remains Python >=3.8.
+For local contributor workflows, we recommend Python >=3.14 with `uv`.
+
+Recommended setup:
+
+```sh
+uv sync
+```
+
+`uv` is recommended, not required. If you prefer not to use `uv`, you can continue to use the existing Poetry + Makefile flow:
+
+```sh
+make venv
+```
+
 ## Configuration
 
 Add this where ever [your pytest configurations](https://docs.pytest.org/en/stable/reference/customize.html) live.
