@@ -29,7 +29,7 @@ black = {version = "*", python = "^3.10"}
 ipython = {version = "^8.26.0", python = "^3.10"}
 pudb = {version = "*", python = "^3.10"}
 tox = {version = "*", python = "^3.10"}
-pre-commit = {version = "^3.7.1", python = "^3.10"}
+pre-commit = {version = "*", python = "^3.10"}
 
 [tool.poetry.plugins."pytest11"]
 "antilru" = "pytest_antilru.main"
