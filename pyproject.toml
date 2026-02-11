@@ -25,11 +25,11 @@ pytest = [
 ]
 
 [tool.poetry.group.dev.dependencies]
-black = {version = "*", python = "^3.10"}
-ipython = {version = "*", python = "^3.10"}
-pudb = {version = "*", python = "^3.10"}
-tox = {version = "*", python = "^3.10"}
-pre-commit = {version = "*", python = "^3.10"}
+black = {version = "*", python = "==3.14"}
+ipython = {version = "*", python = "==3.14"}
+pudb = {version = "*", python = "==3.14"}
+tox = {version = "*", python = "==3.14"}
+pre-commit = {version = "*", python = "==3.14"}
 
 [tool.poetry.plugins."pytest11"]
 "antilru" = "pytest_antilru.main"
