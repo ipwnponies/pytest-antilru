@@ -1,14 +1,14 @@
 ---
 default_language_version:
-  python: python3.11
+  python: python3.12
 exclude: ^bin/
 fail_fast: true
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v2.2.3
+  rev: v6.0.0
   hooks:
   - id: check-added-large-files
-  - id: check-byte-order-marker
+  - id: fix-byte-order-marker
   - id: check-case-conflict
   - id: check-docstring-first
   - id: check-json
@@ -23,9 +23,6 @@ repos:
   - id: detect-private-key
   - id: double-quote-string-fixer
   - id: end-of-file-fixer
-  - id: fix-encoding-pragma
-    args:
-    - --remove
   - id: forbid-new-submodules
   - id: mixed-line-ending
   - id: name-tests-test
@@ -39,18 +36,18 @@ repos:
   - id: sort-simple-yaml
   - id: trailing-whitespace
 - repo: https://github.com/asottile/reorder_python_imports
-  rev: v1.6.1
+  rev: v3.16.0
   hooks:
   - id: reorder-python-imports
 - repo: https://github.com/pre-commit/mirrors-autopep8
-  rev: v1.4.4
+  rev: v2.0.4
   hooks:
   - id: autopep8
 - repo: https://github.com/PyCQA/flake8
-  rev: 3.7.8
+  rev: 7.3.0
   hooks:
   - id: flake8
 - repo: https://github.com/python/black
-  rev: 22.3.0
+  rev: 26.3.1
   hooks:
   - id: black
