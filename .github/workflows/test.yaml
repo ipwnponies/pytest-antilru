@@ -38,7 +38,12 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install tox tox-gh-actions
+        if [[ "${{ matrix.python-version }}" =~ ^3\.(8|9)$ ]]; then
+          python -m pip install "tox<4.50"
+        else
+          python -m pip install "tox>=4.50,<5"
+        fi
+        python -m pip install "tox-gh-actions>=3.5,<4"
     - name: Test with tox
       run: tox
     - name: Coveralls
