@@ -1,12 +1,16 @@
 .DEFAULT_GOAL := test
 INSTALL_STAMP := .venv/venv.touch
 
-.PHONY: venv
+.PHONY: venv setup hooks
 venv: $(INSTALL_STAMP)
+
+setup: venv hooks
+
+hooks: venv
+	uv run pre-commit install --install-hooks
 
 $(INSTALL_STAMP): pyproject.toml uv.lock
 	uv sync
-	uv run pre-commit install
 
 .PHONY: lock
 lock:

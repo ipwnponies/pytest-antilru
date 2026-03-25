@@ -88,13 +88,24 @@ pip install pytest-antilru
 The runtime support for this package remains Python >=3.8.
 For local contributor workflows, we recommend Python >=3.14 with `uv`.
 
-Recommended setup:
+Recommended setup after cloning:
+
+```sh
+make setup
+```
+
+This does two things for contributors:
+- installs the project dev environment with `uv sync`
+- installs git hooks with `pre-commit install --install-hooks`
+
+If you prefer the raw commands:
 
 ```sh
 uv sync
+uv run pre-commit install --install-hooks
 ```
 
-The `Makefile` also uses `uv` under the hood, so these are equivalent:
+If you only want the project dev environment without git hook installation:
 
 ```sh
 make venv
@@ -140,6 +151,9 @@ All other instances will continue to be cached within a test run.
 ```sh
 make test
 ```
+
+This validates the pre-commit checks with `pre-commit run --all-files`, but it does not install git hooks for you.
+Run `make setup` once on a new clone so local commits are checked before push.
 
 ---
 
