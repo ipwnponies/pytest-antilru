@@ -478,8 +478,9 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "pytest", marker = "python_full_version < '3.10'", specifier = ">=3,<9" },
-    { name = "pytest", marker = "python_full_version >= '3.10'", specifier = ">=7,<9" },
+    { name = "pytest", marker = "python_full_version == '3.8.*'", specifier = ">=3,<8.4" },
+    { name = "pytest", marker = "python_full_version == '3.9.*'", specifier = ">=3,<9" },
+    { name = "pytest", marker = "python_full_version >= '3.10'", specifier = ">=3,<10" },
 ]
 
 [package.metadata.requires-dev]
