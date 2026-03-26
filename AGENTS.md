@@ -2,6 +2,25 @@
 
 This project uses **bd** (beads) for issue tracking. Run `bd onboard` to get started.
 
+## uv-Managed Commands
+
+If you use Python or a CLI installed from this repo's `pyproject.toml` via `uv`, run it through `uv run` instead of invoking it directly.
+
+```bash
+uv run <command> [args...]
+```
+
+Examples:
+
+```bash
+uv run python
+uv run pytest
+
+uv run black .
+uv run tox
+uv run pre-commit run --all-files
+```
+
 ## Quick Reference
 
 ```bash
