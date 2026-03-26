@@ -75,10 +75,8 @@ def pytest_collection(session):
     functools.lru_cache = old_lru_cache
 
 
-@pytest.hookimpl(hookwrapper=True)
-def pytest_runtest_teardown(item, nextitem):  # pylint: disable=unused-argument
+@pytest.hookimpl(trylast=True)
+def pytest_runtest_teardown():
     """Call cache_clear on every cache_function, after every test run."""
     for function in CACHED_FUNCTIONS:
         function.cache_clear()
-
-    yield
