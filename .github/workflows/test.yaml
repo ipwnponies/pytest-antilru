@@ -66,6 +66,20 @@ jobs:
         python -m pip install poetry
         poetry check --lock --strict
 
+  uv_compat:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python 3.14
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.14"
+    - name: Set up uv
+      uses: astral-sh/setup-uv@v6
+    - name: Validate uv compatibility
+      run: |
+        uv sync --locked
+
   coveralls_finish:
     needs: test
     runs-on: ubuntu-latest
