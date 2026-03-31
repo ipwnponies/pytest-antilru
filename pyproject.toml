@@ -5,17 +5,15 @@ description = "Bust functools.lru_cache when running pytest to avoid test pollut
 license = "MIT"
 authors = [{name = "John Nguyen", email = "ipwnponies@gmail.com"}]
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 dependencies = [
     # Match pytest's python-version compatibility matrix by interpreter series.
-    "pytest>=3,<8.4; python_version == '3.8'",
     "pytest>=3,<9; python_version == '3.9'",
     "pytest>=3,<10; python_version >= '3.10'",
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Framework :: Pytest",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
 ]
 
