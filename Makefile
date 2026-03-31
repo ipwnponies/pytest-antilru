@@ -22,6 +22,10 @@ publish:
 	uv build
 	uv publish
 
+.PHONY: build
+build:
+	uv build
+
 .PHONY: test
 test: $(INSTALL_STAMP)
 	uv run tox

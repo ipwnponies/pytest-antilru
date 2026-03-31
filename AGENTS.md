@@ -2,9 +2,21 @@
 
 This project uses **bd** (beads) for issue tracking. Run `bd onboard` to get started.
 
+## Preferred Make Targets
+
+Prefer the repo's `make` targets when they exist. They are the stable abstraction for local setup, testing, and builds even if the underlying tool changes from `uv` to something else later.
+
+```bash
+make venv
+make test
+make build
+```
+
+Use `make publish` only when the user explicitly asks to publish a release, because it performs `uv publish`.
+
 ## uv-Managed Commands
 
-If you use Python or a CLI installed from this repo's `pyproject.toml` via `uv`, run it through `uv run` instead of invoking it directly.
+If you need a Python command that does not already have a `make` target, run CLIs installed from this repo's `pyproject.toml` through `uv run` instead of invoking them directly.
 
 ```bash
 uv run <command> [args...]
@@ -20,6 +32,16 @@ uv run black .
 uv run tox
 uv run pre-commit run --all-files
 ```
+
+## Python Package Builds
+
+Build distribution artifacts with `make build`.
+
+```bash
+make build
+```
+
+Right now `make build` delegates to `uv build`. Use the `make` target instead of `python -m build` so agents do not need to guess which packaging tool is active in this repo.
 
 ## Quick Reference
 

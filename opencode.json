@@ -1,0 +1,15 @@
+{
+    "$schema": "https://opencode.ai/config.json",
+    "permission": {
+        "bash": {
+            "make venv": "allow",
+            "make test": "allow",
+            "make build": "allow",
+            "uv sync": "allow",
+            "uv run tox": "allow",
+            "uv run tox *": "allow",
+            "uv build": "allow",
+            "uv build *": "allow"
+        }
+    }
+}
