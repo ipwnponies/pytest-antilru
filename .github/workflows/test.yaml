@@ -19,7 +19,6 @@ jobs:
       fail-fast: false
       matrix:
         python-version:
-          - "3.8"
           - "3.9"
           - "3.10"
           - "3.11"
@@ -39,7 +38,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        if [[ "${{ matrix.python-version }}" =~ ^3\.(8|9)$ ]]; then
+        if [[ "${{ matrix.python-version }}" == "3.9" ]]; then
           python -m pip install "tox<4.50"
         else
           python -m pip install "tox>=4.50,<5"
@@ -66,6 +65,20 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install poetry
         poetry check --lock --strict
+
+  uv_compat:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python 3.14
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.14"
+    - name: Set up uv
+      uses: astral-sh/setup-uv@v6
+    - name: Validate uv compatibility
+      run: |
+        uv sync --locked
 
   coveralls_finish:
     needs: test

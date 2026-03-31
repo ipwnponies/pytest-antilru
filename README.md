@@ -64,12 +64,11 @@ Since this is a `pytest` plugin, you need to be using `pytest` to run your tests
 
 ## Compatibility
 
-Current releases (`>=2.0`) support Python `>=3.8`.
-If you need Python `<3.8`, use an older `pytest-antilru` release line instead.
+Current releases (`>=2.0`) support Python `>=3.9`.
+If you need Python `<3.9`, use an older `pytest-antilru` release line instead.
 
 The supported pytest bands for current releases are:
 
-- Python 3.8: pytest `>=3,<8.4` (the highest installable release is 8.3.5)
 - Python 3.9: pytest `>=3,<9`
 - Python 3.10+: pytest `>=3,<10`
 
@@ -94,8 +93,8 @@ pip install pytest-antilru
 
 ## Development setup
 
-The runtime support for this package remains Python >=3.8.
-For local contributor workflows, we recommend Python >=3.14 with `uv`.
+The runtime support for this package is Python >=3.9.
+For local contributor workflows, we recommend Python >=3.13 with `uv`.
 
 Recommended setup after cloning:
 

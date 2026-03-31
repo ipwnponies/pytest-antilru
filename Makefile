@@ -10,7 +10,7 @@ hooks: venv
 	uv run pre-commit install --install-hooks
 
 $(INSTALL_STAMP): pyproject.toml uv.lock
-	uv sync
+	uv sync && mkdir -p $(dir $@) && touch $@
 
 .PHONY: lock
 lock:
