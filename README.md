@@ -94,7 +94,7 @@ pip install pytest-antilru
 ## Development setup
 
 The runtime support for this package is Python >=3.9.
-For local contributor workflows, we recommend Python >=3.14 with `uv`.
+For local contributor workflows, we recommend Python >=3.13 with `uv`.
 
 Recommended setup after cloning:
 

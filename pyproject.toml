@@ -25,11 +25,11 @@ antilru = "pytest_antilru.main"
 
 [dependency-groups]
 dev = [
-    "black; python_version == '3.13'",
-    "ipython; python_version == '3.13'",
-    "pudb; python_version == '3.13'",
-    "tox; python_version == '3.13'",
-    "pre-commit; python_version == '3.13'",
+    "black",
+    "ipython",
+    "pudb",
+    "tox",
+    "pre-commit",
 ]
 
 [build-system]
