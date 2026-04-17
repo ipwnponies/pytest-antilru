@@ -64,13 +64,21 @@ Since this is a `pytest` plugin, you need to be using `pytest` to run your tests
 
 ## Compatibility
 
-Starting from v2+, this project supports python 3.8+ and pytest 3+.
+Current releases (`>=2.0`) support Python `>=3.9`.
+If you need Python `<3.9`, use an older `pytest-antilru` release line instead.
 
-Older package releases exist to support python 2.7 to 3.7, from pytest 2-7.
+The supported pytest bands for current releases are:
 
-While we aim to support a wide range of python and pytest combinations, pytest only supports the latest release:
-they do not patch older releases to work with newer python versions.
-See [tox.ini] for the full envlist of what is being tested.
+- Python 3.9: pytest `>=3,<9`
+- Python 3.10+: pytest `>=3,<10`
+
+Pytest 9 is tested only on Python 3.10+.
+
+The `tox` matrix in [tox.ini] and CI exercise these compatibility bands, including Python 3.14 coverage.
+
+While we aim to support a wide range of Python and pytest combinations, pytest only allows its latest releases to support new interpreters:
+they do not patch older releases to work with newer Python versions.
+See [tox.ini] for the full envlist of what is being tested, and see the existing allowlist docs in the [`lru_cache_disabled`](#lru_cache_disabled) section for compatibility-related configuration guidance.
 
 If you experience issues, please check for compatibility between your python and pytest target versions.
 Open an issue once these are verified.
@@ -85,19 +93,40 @@ pip install pytest-antilru
 
 ## Development setup
 
-The runtime support for this package remains Python >=3.8.
-For local contributor workflows, we recommend Python >=3.14 with `uv`.
+The runtime support for this package is Python >=3.9.
+For local contributor workflows, we recommend Python >=3.13 with `uv`.
 
-Recommended setup:
+Recommended setup after cloning:
+
+```sh
+make setup
+```
+
+This does two things for contributors:
+- installs the project dev environment with `uv sync`
+- installs git hooks with `pre-commit install --install-hooks`
+
+If you prefer the raw commands:
 
 ```sh
 uv sync
+uv run pre-commit install --install-hooks
 ```
 
-`uv` is recommended, not required. If you prefer not to use `uv`, you can continue to use the existing Poetry + Makefile flow:
+If you only want the project dev environment without git hook installation:
 
 ```sh
 make venv
+```
+
+Poetry remains supported for legacy workflows, but is deprecated in favor of `uv`.
+When dependencies change, `make lock` runs both `uv` and `poetry` lock commands.
+
+Legacy Poetry commands:
+
+```sh
+poetry lock
+poetry sync
 ```
 
 ## Configuration
@@ -130,6 +159,9 @@ All other instances will continue to be cached within a test run.
 ```sh
 make test
 ```
+
+This validates the pre-commit checks with `pre-commit run --all-files`, but it does not install git hooks for you.
+Run `make setup` once on a new clone so local commits are checked before push.
 
 ---
 

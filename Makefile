@@ -1,20 +1,34 @@
 .DEFAULT_GOAL := test
 INSTALL_STAMP := .venv/venv.touch
 
-.PHONY: venv
+.PHONY: venv setup hooks
 venv: $(INSTALL_STAMP)
 
-$(INSTALL_STAMP): pyproject.toml poetry.lock
-	poetry sync
-	.venv/bin/pre-commit install
+setup: venv hooks
+
+hooks: venv
+	uv run pre-commit install --install-hooks
+
+$(INSTALL_STAMP): pyproject.toml uv.lock
+	uv sync
+
+.PHONY: lock
+lock:
+	uv lock
+	poetry lock
 
 .PHONY: publish
 publish:
-	poetry publish --build
+	uv build
+	uv publish
+
+.PHONY: build
+build:
+	uv build
 
 .PHONY: test
 test: $(INSTALL_STAMP)
-	.venv/bin/tox
+	uv run tox
 
 .PHONY: clean
 clean: ## Clean working directory
