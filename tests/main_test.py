@@ -7,11 +7,14 @@ import pytest
 
 from pytest_antilru import main
 
+CACHED_RESULTS_FROM_TEST = {}
+CACHED_RESULTS_DURING_TEARDOWN = {}
+
 
 def expensive_network_call():
     # Pretend this is an expensive network call.
     # You want to cache this for performance but you want to run tests with different responses as well.
-    return 1
+    return mock.sentinel.default_network_call
 
 
 @lru_cache
@@ -26,22 +29,42 @@ def cache_me_empty_decorator_call():
 
 @pytest.fixture(params=[cache_me_lru_cache, cache_me_empty_decorator_call])
 def cache_function(request):
+    '''Exercise the same cache lifecycle assertions for both lru_cache decorator forms.'''
+    # Initialize cross-test state for this cached function so test_b can compare
+    # what test_a stored during its body with what the fixture later saw in teardown.
+    CACHED_RESULTS_FROM_TEST.setdefault(request.param, None)
+    CACHED_RESULTS_DURING_TEARDOWN.setdefault(request.param, None)
     yield request.param
 
 
-def test_a_run_first(cache_function: Callable):
-    '''Run this test first, to pollute the test environment.'''
-    assert cache_function() == 1
+def test_a_run_first(cache_function: Callable, assert_cache_visible_during_teardown):
+    '''Populate the cache so teardown and the next test can observe its lifecycle.'''
+    result = cache_function()
+    # Capture the cached result so fixture teardown can assert it is still present.
+    CACHED_RESULTS_FROM_TEST[cache_function] = result
+    assert (
+        result is mock.sentinel.default_network_call
+    ), 'the unpatched test should cache the default network-call sentinel'
 
 
-def test_b_run_second(cache_function: Callable):
-    '''Run second, after env is dirtied.'''
-    # We want to mock the network call for this test case
+def test_b_run_second(cache_function: Callable, assert_cache_visible_during_teardown):
+    '''Verify cache state is reset between tests while preserving teardown access.'''
+    assert (
+        CACHED_RESULTS_DURING_TEARDOWN[cache_function] is CACHED_RESULTS_FROM_TEST[cache_function]
+    ), 'the prior test should keep its cached value until fixture teardown runs'
+    assert (
+        cache_function.cache_info().currsize == 0
+    ), 'the plugin should clear the previous test cache before this test starts'
+
     with mock.patch.object(
-        sys.modules[__name__], 'expensive_network_call', return_value=2, autospec=True
+        sys.modules[__name__], 'expensive_network_call', return_value=mock.sentinel.patched_network_call, autospec=True
     ) as mock_network_call:
-        assert cache_function() == 2
-        assert mock_network_call.called
+        result = cache_function()
+        CACHED_RESULTS_FROM_TEST[cache_function] = result
+        assert (
+            result is mock.sentinel.patched_network_call
+        ), 'after cache reset, this test should observe the patched network-call sentinel'
+        assert mock_network_call.called, 'the patched network function should be exercised'
 
 
 def test_lru_cache_unknown_kwargs():
