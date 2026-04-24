@@ -21,7 +21,6 @@ repos:
     args:
     - --allow-missing-credentials
   - id: detect-private-key
-  - id: double-quote-string-fixer
   - id: end-of-file-fixer
   - id: forbid-new-submodules
   - id: mixed-line-ending
