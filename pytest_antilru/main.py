@@ -75,8 +75,15 @@ def pytest_collection(session):
     functools.lru_cache = old_lru_cache
 
 
-@pytest.hookimpl(trylast=True)
+@pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_runtest_teardown():
-    """Call cache_clear on every cache_function, after every test run."""
+    """Call cache_clear on every cache_function, after every test run.
+
+    This hook is intended to run after all hooks and hook wrappers. This is why it's a try-first hookwrapper, and the
+    implementation is after returning from yield. This shifts pytest hook registration to pick this first and also make
+    it last to unwrap.
+    """
+    yield
+
     for function in CACHED_FUNCTIONS:
         function.cache_clear()
