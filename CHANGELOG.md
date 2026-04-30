@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## [2.0.1] - 2026-04-29
+
+### Fixed
+
+- `lru_cache_disabled` now applies to `@lru_cache` (no parentheses) form; previously only the `@lru_cache()` path was filtered
+- Teardown ordering: caches are now cleared after other teardown hooks, not before
+
 ## [2.0.0] - 2024-07-28
 
 Add `lru_cache_disabled` pytest config option, which is an allowlist to selectively apply anti lru on specific
