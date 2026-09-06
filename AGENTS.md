@@ -56,6 +56,15 @@ value. `tox.ini` runs this pair under three configs, but only `pytest_lru_cache_
 actually exercises that assertion — the other two configs hit a `pytest.skip()` guard (empty
 allowlist, or an allowlist that already covers `tests.main_test`).
 
+## Plugin Internals Gotcha
+
+In `pytest_antilru/main.py`, `pytest_runtest_teardown` is registered with `tryfirst=True` as a
+hookwrapper specifically so its own cache-clearing code (after `yield`) runs last, once every other
+teardown hookwrapper and fixture has finished. That's why a cached value stays visible through a
+test's own fixture teardown but is gone by the next test — `tests/teardown_order_test.py` and its
+hookwrapper probe in `tests/conftest.py` lock in that ordering. Don't drop `tryfirst` or reorder this
+hook without re-verifying against both.
+
 ## Non-Interactive Shell Commands
 
 **ALWAYS use non-interactive flags** with file operations to avoid hanging on confirmation prompts.
