@@ -50,6 +50,10 @@ warms the cache, `test_b` asserts it was busted. `tox.ini` deliberately runs thi
 in reverse order, to prove cache-busting works regardless of execution order — don't reorder the
 `tox.ini` commands without preserving that check.
 
+Both of those shapes exist because the suite cannot use `pytest.Pytester` while pytest 3, 4, and 5
+are in the matrix. Before adding another ordered-invocation scenario, read
+`docs/future-work/2026-09-13-pytester-rewrite.md`.
+
 `tests/allowlist_test.py` reuses `main_test.py`'s `test_a_run_first` but defines its own
 `test_b_run_second` with the opposite assertion: an allowlisted module should *keep* its cached
 value. `tox.ini` runs this pair under three configs, but only `pytest_lru_cache_allowlist_no_match.ini`
