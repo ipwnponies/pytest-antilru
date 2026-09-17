@@ -10,12 +10,18 @@ CACHED_FUNCTIONS = []
 old_lru_cache = None
 
 
+def is_module_covered(module: str, disabled_modules) -> bool:
+    """Match on module-path boundaries: app.util covers app.util and app.util.helpers, not app.utilities."""
+    return any(module == module_path or module.startswith(module_path + '.') for module_path in disabled_modules)
+
+
 def cache_user_function(user_function, wrapper, lru_cache_disabled_modules: bool):
     if lru_cache_disabled_modules:
-        for module_path in lru_cache_disabled_modules:
-            if user_function.__module__.startswith(module_path):
-                CACHED_FUNCTIONS.append(wrapper)
-                break
+        # __module__ may be missing or None, e.g. for C-implemented methods. Treat as
+        # uncovered, don't crash.
+        module = getattr(user_function, '__module__', None) or ''
+        if is_module_covered(module, lru_cache_disabled_modules):
+            CACHED_FUNCTIONS.append(wrapper)
     else:
         CACHED_FUNCTIONS.append(wrapper)
 

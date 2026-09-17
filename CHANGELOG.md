@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Fixed
+
+- `lru_cache_disabled` now matches on module-path boundaries. An entry `app.util` matches `app.util`
+  and `app.util.helpers`, but no longer matches `app.utilities` or `application`. Configs relying on
+  the old raw-string prefix match must list the full module path.
+
 ## [2.0.1] - 2026-04-29
 
 ### Fixed

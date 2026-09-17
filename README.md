@@ -154,6 +154,10 @@ In this example, any usage of `lru_cache` in a file inside `my_module.util` or `
 will be disabled.
 All other instances will continue to be cached within a test run.
 
+Matching is on module-path boundaries: an entry matches a module with exactly that path, or any module beneath
+it. `my_module.util` matches `my_module.util` and `my_module.util.helpers`, but does not match
+`my_module.utilities`.
+
 ## How to test the software
 
 ```sh
