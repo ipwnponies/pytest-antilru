@@ -4,6 +4,7 @@ from unittest import mock
 import pytest
 
 import tests.main_test
+from pytest_antilru.main import is_module_covered
 from tests.main_test import cache_function  # noqa: F401
 from tests.main_test import test_a_run_first  # noqa: F401
 
@@ -14,7 +15,7 @@ def test_b_run_second(cache_function: Callable, pytestconfig):  # noqa: F811
     if not disabled_modules:
         pytest.skip('allowlist assertions require a non-empty lru_cache_disabled config')
 
-    if any('tests.main_test'.startswith(module_prefix) for module_prefix in disabled_modules):
+    if is_module_covered('tests.main_test', disabled_modules):
         pytest.skip('allowlist assertions only apply when tests.main_test is not covered')
 
     with mock.patch.object(

@@ -58,7 +58,9 @@ are in the matrix. Before adding another ordered-invocation scenario, read
 `test_b_run_second` with the opposite assertion: an allowlisted module should *keep* its cached
 value. `tox.ini` runs this pair under three configs, but only `pytest_lru_cache_allowlist_no_match.ini`
 actually exercises that assertion — the other two configs hit a `pytest.skip()` guard (empty
-allowlist, or an allowlist that already covers `tests.main_test`).
+allowlist, or an allowlist that already covers `tests.main_test`, per `tests/pytest_lru_cache_allowlist.ini`).
+The guard calls `pytest_antilru.main.is_module_covered` directly, the same function
+`cache_user_function` uses, so it can't disagree with the plugin about what's covered.
 
 ## Plugin Internals Gotcha
 
