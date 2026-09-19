@@ -1,7 +1,6 @@
 # Please don't use this, it's inconsistent and will be monkey-patched left and right.
 # We're only importing it to update functools module's reference
 import functools
-import logging
 from functools import wraps  # pylint: disable=ungrouped-imports
 
 import pytest
@@ -43,41 +42,30 @@ def pytest_load_initial_conftests(early_config, parser, args):  # pylint: disabl
     _recording = True
 
     @wraps(_REAL_LRU_CACHE)
-    def lru_cache_wrapper(maxsize=Ellipsis, typed=Ellipsis, **kwargs):
+    def lru_cache_wrapper(*args, **kwargs):
         """Wrap lru_cache decorator, to track which functions are decorated.
 
         Reads the _recording module global on every call, rather than closing over its value, so a
         wrapper object kept alive by a `from functools import lru_cache` binding still obeys the
         current session's mode instead of the mode in force when it was created.
         """
+        result = _REAL_LRU_CACHE(*args, **kwargs)
 
-        if kwargs:
-            logging.warning('Unexpected kwargs, maybe an update in functools.lru_cache')
+        # lru_cache has two forms. Applied bare, lru_cache(fn) returns the finished cache wrapper,
+        # which carries cache_clear. Called with options, lru_cache(maxsize=128) returns a
+        # decorating function with no cache_clear, which must still be applied to the user function.
+        if hasattr(result, 'cache_clear'):
+            if _recording:
+                cache_user_function(result.__wrapped__, result, lru_cache_disabled_modules)
+            return result
 
-        # When decorator is called without params, user function is first arg (maxsize)
-        if callable(maxsize) and typed is Ellipsis:
-            user_function = maxsize
-            wrapper = _REAL_LRU_CACHE(user_function)
+        @wraps(result)
+        def decorating_function(user_function):
+            """Wraps the user function, which is what everyone is actually using. Including us."""
+            wrapper = result(user_function)
             if _recording:
                 cache_user_function(user_function, wrapper, lru_cache_disabled_modules)
             return wrapper
-
-        # Apply lru_cache params (maxsize, typed)
-        kwargs = {}
-        if maxsize is not Ellipsis:
-            kwargs['maxsize'] = maxsize
-        if typed is not Ellipsis:
-            kwargs['typed'] = typed
-        wrapper = _REAL_LRU_CACHE(**kwargs)
-
-        # Mimicking lru_cache: https://github.com/python/cpython/blob/v3.7.2/Lib/functools.py#L476-L478
-        @wraps(wrapper)
-        def decorating_function(user_function):
-            """Wraps the user function, which is what everyone is actually using. Including us."""
-            _wrapper = wrapper(user_function)
-            if _recording:
-                cache_user_function(user_function, _wrapper, lru_cache_disabled_modules)
-            return _wrapper
 
         return decorating_function
 
