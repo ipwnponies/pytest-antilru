@@ -10,10 +10,14 @@ from pytest_antilru import main
 
 
 class FakeParser:
-    '''Stand-in for pytest's Parser, just enough to satisfy pytest_load_initial_conftests.'''
+    '''Stand-in for pytest's Parser, just enough to satisfy pytest_addoption and
+    pytest_load_initial_conftests.'''
+
+    def __init__(self):
+        self.addini_calls = []
 
     def addini(self, *args, **kwargs):
-        pass
+        self.addini_calls.append((args, kwargs))
 
 
 class FakeEarlyConfig:
@@ -41,6 +45,21 @@ def installed():
     finally:
         functools.lru_cache = original_lru_cache
         main._recording = original_recording
+
+
+def test_addoption_registers_lru_cache_disabled_ini():
+    '''The ini option is registered from pytest_addoption, by convention, rather than from inside
+    the hookwrapper that monkey-patches lru_cache.'''
+    parser = FakeParser()
+
+    main.pytest_addoption(parser)
+
+    assert parser.addini_calls == [
+        (
+            ('lru_cache_disabled', 'Allowlist of module prefixes to apply disable lru_cache on'),
+            {'type': 'linelist'},
+        )
+    ]
 
 
 def test_install_resets_stale_registry(monkeypatch):

@@ -29,10 +29,13 @@ def cache_user_function(user_function, wrapper, lru_cache_disabled_modules: bool
         CACHED_FUNCTIONS.append(wrapper)
 
 
+def pytest_addoption(parser):
+    parser.addini('lru_cache_disabled', 'Allowlist of module prefixes to apply disable lru_cache on', type='linelist')
+
+
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_load_initial_conftests(early_config, parser, args):  # pylint: disable=unused-argument
     """Monkey patch lru_cache, before any module imports occur."""
-    parser.addini('lru_cache_disabled', 'Allowlist of module prefixes to apply disable lru_cache on', type='linelist')
     lru_cache_disabled_modules = early_config.getini('lru_cache_disabled')
 
     # Reset in case a prior in-process session left wrappers registered.
