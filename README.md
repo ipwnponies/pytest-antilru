@@ -109,9 +109,9 @@ class Client:
 In both cases the cache keeps its values across tests and nothing is reported. If you are debugging
 test pollution with this plugin installed, check for these two patterns first.
 
-Some runtime-created caches are recorded anyway, as a side effect of how the patch is removed. This
-is not a guarantee and should not be relied on. `docs/architecture.md` explains the mechanism and the
-reasons behind it in full.
+`docs/architecture.md` explains the mechanism in full: a cache is recorded if and only if it is
+created while the plugin's patch is actively recording, from the moment it installs (before any test
+or application module is imported) through the end of collection.
 
 ## Dependencies
 

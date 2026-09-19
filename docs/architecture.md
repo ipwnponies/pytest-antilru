@@ -13,16 +13,19 @@ The goal is limited to that. The plugin does not disable caching, and it does no
 
 ## Mechanism
 
-The plugin works by replacing `functools.lru_cache` with a wrapper for part of the pytest run. The
-wrapper delegates to the real `lru_cache`, so caching behaves normally, and additionally records the
-cache object it just created. A teardown hook then clears every recorded cache after each test.
+The plugin works by installing one wrapper in place of `functools.lru_cache` for the whole pytest
+session. The wrapper always delegates to the real `lru_cache`, captured once at import as
+`_REAL_LRU_CACHE`, so caching behaves normally. Whether it additionally records the cache object it
+just created is controlled by a module-level recording flag, read fresh on every call rather than
+captured once. A teardown hook then clears every recorded cache after each test.
 
-Three hooks, in `pytest_antilru/main.py`:
+Four hooks, in `pytest_antilru/main.py`:
 
 | hook | what it does |
 | --- | --- |
-| `pytest_load_initial_conftests` | saves the real `lru_cache`, installs the wrapper |
-| `pytest_collection` (after yield) | restores the real `lru_cache` |
+| `pytest_load_initial_conftests` | installs the wrapper, turns recording on |
+| `pytest_collection` (after yield) | turns recording off |
+| `pytest_unconfigure` | restores the real `lru_cache` attribute |
 | `pytest_runtest_teardown` (after yield) | calls `cache_clear()` on every recorded cache |
 
 Recording happens in `cache_user_function`, which appends to the module-level `CACHED_FUNCTIONS`
@@ -32,7 +35,7 @@ wrapper returns a decorating function first.
 
 ### Why the patch is installed in `pytest_load_initial_conftests`
 
-The wrapper only records caches that are created while it is installed, so it has to be installed
+The wrapper only records caches that are created while recording is on, so it has to be installed
 before any application code is imported. `pytest_load_initial_conftests` is the earliest practical
 hook, and it is marked `tryfirst` to run ahead of other plugins that use the same hook.
 
@@ -40,12 +43,28 @@ This was a fix for a concrete problem: pytest-django calls `django.setup()` from
 `pytest_load_initial_conftests`, which imports application modules through `AppConfig.ready`. Before
 the fix, those imports happened before the patch was installed and their caches were never recorded.
 
-### Why the patch is removed at the end of collection
+### Why recording stops at the end of collection, rather than unpatching
 
-The plugin restores `functools.lru_cache` so that it is not left monkey-patched any longer than
-necessary. The restore was originally at the end of `pytest_load_initial_conftests` and was moved to
-the end of collection, because restoring before test modules were imported was too early to record
-anything useful.
+Earlier versions of this plugin removed the patch entirely at the end of collection, by rebinding
+`functools.lru_cache` back to the real implementation. That had two problems.
+
+First, restoring an attribute cannot reach a name a module already bound to the wrapper by running
+`from functools import lru_cache` during collection; see the next section. Second, and more serious,
+a second pytest session in the same interpreter (for example, a `pytester` inner run) would capture
+whatever `functools.lru_cache` currently was, at that second session's install, into what the wrapper
+treats as "the real implementation". If the first session's patch had leaked (many pytest exit paths
+never reach `pytest_collection`; see the exit-path table in
+`docs/future-work/2026-09-18-audit-remediation.md`), the second session captured the first session's
+own wrapper as real, and every cache lookup recursed into it forever.
+
+The fix keeps one wrapper installed for the life of the process and switches what it does instead of
+removing it. `_REAL_LRU_CACHE` is captured once, at module import, before any patch can exist, so a
+later install never re-reads a possibly-already-patched `functools.lru_cache`. `pytest_collection`
+now turns the recording flag off rather than restoring the attribute, and `pytest_unconfigure`
+restores the attribute, as a best-effort cleanup on the exit paths it reaches. That is more paths than
+`pytest_collection` reaches, though still not all of them; what can survive on the paths neither
+reaches is a wrapper that can no longer self-recurse, because it never reads `functools.lru_cache` to
+find "the real implementation" in the first place.
 
 ## The interception window
 
@@ -107,27 +126,22 @@ test polluted by one of these caches looks exactly like a test polluted by no pl
 at all. When debugging suspected cache pollution with this plugin active, check for these two
 patterns first.
 
-## Name binding, and why some runtime caches are recorded anyway
+## Name binding no longer matters
 
-Restoring the patch rebinds the attribute `functools.lru_cache`. It cannot reach names that were
-bound to the wrapper object elsewhere.
+Earlier versions of this plugin stopped recording by rebinding the attribute `functools.lru_cache`
+back to the real implementation. That could not reach a name a module had already bound to the
+wrapper by running `from functools import lru_cache` during collection: such a module's runtime
+`lru_cache(...)` calls kept reaching the wrapper and kept being recorded, while a module that ran
+`import functools` instead got the restored original on every call and was not. Two modules that
+were otherwise identical behaved differently, based only on import style.
 
-A module that ran `from functools import lru_cache` during collection holds its own reference to the
-wrapper in its globals. The restore does not touch that reference. If such a module calls
-`lru_cache(...)` at runtime, the call still reaches the wrapper and the cache is still recorded. A
-module that ran `import functools` instead performs a fresh attribute lookup on every call, gets the
-restored original, and its runtime caches are not recorded.
-
-Two modules that are otherwise identical therefore behave differently, based only on import style:
-
-| module, imported during collection | runtime `lru_cache(...)` call | recorded |
-| --- | --- | --- |
-| `from functools import lru_cache` | resolves to the wrapper, via the binding made at import | yes |
-| `import functools` | resolves to the restored original | no |
-
-This is an artifact of how monkey-patching interacts with `from X import Y`, not a designed feature.
-Do not rely on it. The guarantee is the one stated above: caches created during collection are
-recorded.
+Recording is now controlled by a module-level flag, read fresh on every call rather than captured in
+the wrapper's closure. Once `pytest_collection` turns it off, every surviving wrapper stops recording
+on its very next call, regardless of which name resolution path reached it or when that wrapper
+object was created. The guarantee from "What is not covered" is exact now, not approximate: a cache
+is recorded if and only if it is created while recording is on, from install in
+`pytest_load_initial_conftests` (before collection starts, so `pytest-django`'s `django.setup()`
+imports are covered too; see above) through the end of collection.
 
 ## The allowlist
 
