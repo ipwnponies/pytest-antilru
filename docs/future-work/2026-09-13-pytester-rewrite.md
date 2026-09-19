@@ -90,6 +90,17 @@ outer teardown would call `cache_clear()` on functions registered by the inner r
 the cross-contamination class this plugin exists to prevent, and it would make the suite's results
 untrustworthy.
 
+This constraint is about cross-contamination, not a crash: the `RecursionError` that used to hit a
+second in-process session (audit finding 1) is fixed as of commit `b96217f`, which captures the real
+`lru_cache` once at import rather than re-reading a possibly-already-patched `functools.lru_cache` at
+each install. An in-process inner run would no longer crash, but the contamination it causes changed
+shape and got worse, not better: commit `5d0b03b` added `CACHED_FUNCTIONS.clear()` at install, so an
+inner run's install now silently wipes whatever the outer run had already recorded during its own
+collection. The outer run's teardown then clears nothing for those caches, for the rest of the outer
+session, with no error or warning. `runpytest_subprocess` is still the right call, more clearly now
+than before: the failure mode an in-process run risks is silent, permanent loss of cache-busting for
+the outer session, not merely a crash.
+
 **Subprocess runs are invisible to `coverage run`.** [`tox.ini`](../../tox.ini#L63-L64) enforces
 `coverage report --fail-under 100` on both [`pytest_antilru`](../../pytest_antilru) and
 [`tests`](../../tests). Subprocess coverage needs

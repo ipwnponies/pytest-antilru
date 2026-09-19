@@ -1,11 +1,10 @@
 import sys
 from collections.abc import Callable
+from functools import cache
 from functools import lru_cache
 from unittest import mock
 
 import pytest
-
-from pytest_antilru import main
 
 CACHED_RESULTS_FROM_TEST = {}
 CACHED_RESULTS_DURING_TEARDOWN = {}
@@ -27,7 +26,12 @@ def cache_me_empty_decorator_call():
     return expensive_network_call()
 
 
-@pytest.fixture(params=[cache_me_lru_cache, cache_me_empty_decorator_call])
+@cache
+def cache_me_functools_cache():
+    return expensive_network_call()
+
+
+@pytest.fixture(params=[cache_me_lru_cache, cache_me_empty_decorator_call, cache_me_functools_cache])
 def cache_function(request):
     '''Exercise the same cache lifecycle assertions for both lru_cache decorator forms.'''
     # Initialize cross-test state for this cached function so test_b can compare
@@ -67,20 +71,20 @@ def test_b_run_second(cache_function: Callable, assert_cache_visible_during_tear
         assert mock_network_call.called, 'the patched network function should be exercised'
 
 
-def test_lru_cache_unknown_kwargs():
-    '''Test that warning is emitted when new kwargs are added to lru_cache.
-
-    Let's hope somene reports the warning and we can get to patching.
-    '''
-    with mock.patch.object(main.logging, 'warning', wraps=main.logging.warning) as spy:
-        lru_cache(new_feature=1)(expensive_network_call)
-
-        assert spy.called
+def test_lru_cache_unknown_kwargs_raises():
+    '''An unknown keyword argument should raise TypeError from the real lru_cache, the same as it
+    would with the plugin uninstalled, rather than being silently discarded.'''
+    with pytest.raises(TypeError):
+        lru_cache(new_feature=1)
 
 
 class TestParameters:
     @lru_cache(1337, typed=True)
     def cache_me_lru_cache_explicit_param(self):
+        return mock.sentinel.default_param
+
+    @lru_cache(1337, True)
+    def cache_me_lru_cache_positional_param(self):
         return mock.sentinel.default_param
 
     def test(self):
@@ -95,10 +99,23 @@ class TestParameters:
         }
 
     @pytest.mark.skipif(sys.version_info < (3, 9), reason='cache_parameters added to Python 3.9')
-    def test_default_parameters(self, cache_function: Callable):  # pragma: no cover <python39
-        '''Test the default parameter is wrapped correctly.'''
+    def test_positional_parameters(self):  # pragma: no cover <python39
+        '''maxsize and typed forwarded correctly when both are passed positionally, not just by
+        keyword; *args/**kwargs forwarding must not silently favor one calling convention.'''
+        assert self.cache_me_lru_cache_positional_param() == mock.sentinel.default_param
+        assert self.cache_me_lru_cache_positional_param.cache_parameters() == {
+            'maxsize': 1337,
+            'typed': True,
+        }
 
+    @pytest.mark.skipif(sys.version_info < (3, 9), reason='cache_parameters added to Python 3.9')
+    def test_default_parameters(self, cache_function: Callable):  # pragma: no cover <python39
+        '''Test the default parameter is wrapped correctly.
+
+        @functools.cache is unbounded by default (maxsize=None); @lru_cache defaults to 128.
+        '''
+        expected_maxsize = None if cache_function is cache_me_functools_cache else 128
         assert cache_function.cache_parameters() == {
-            'maxsize': 128,
+            'maxsize': expected_maxsize,
             'typed': False,
         }

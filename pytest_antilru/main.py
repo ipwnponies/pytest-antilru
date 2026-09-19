@@ -1,13 +1,16 @@
 # Please don't use this, it's inconsistent and will be monkey-patched left and right.
 # We're only importing it to update functools module's reference
 import functools
-import logging
 from functools import wraps  # pylint: disable=ungrouped-imports
 
 import pytest
 
+# Captured at import, before any patch can exist. Re-reading functools.lru_cache at install
+# time is what makes a second in-process session wrap our own wrapper and recurse.
+_REAL_LRU_CACHE = functools.lru_cache
+
 CACHED_FUNCTIONS = []
-old_lru_cache = None
+_recording = False
 
 
 def is_module_covered(module: str, disabled_modules) -> bool:
@@ -26,45 +29,46 @@ def cache_user_function(user_function, wrapper, lru_cache_disabled_modules: bool
         CACHED_FUNCTIONS.append(wrapper)
 
 
+def pytest_addoption(parser):
+    parser.addini('lru_cache_disabled', 'Allowlist of module prefixes to apply disable lru_cache on', type='linelist')
+
+
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_load_initial_conftests(early_config, parser, args):  # pylint: disable=unused-argument
     """Monkey patch lru_cache, before any module imports occur."""
-    parser.addini('lru_cache_disabled', 'Allowlist of module prefixes to apply disable lru_cache on', type='linelist')
     lru_cache_disabled_modules = early_config.getini('lru_cache_disabled')
 
-    # Gotta hold on to this before we patch it away
-    global old_lru_cache
-    old_lru_cache = functools.lru_cache
+    # Reset in case a prior in-process session left wrappers registered.
+    CACHED_FUNCTIONS.clear()
 
-    @wraps(functools.lru_cache)
-    def lru_cache_wrapper(maxsize=Ellipsis, typed=Ellipsis, **kwargs):
-        """Wrap lru_cache decorator, to track which functions are decorated."""
+    global _recording
+    _recording = True
 
-        if kwargs:
-            logging.warning('Unexpected kwargs, maybe an update in functools.lru_cache')
+    @wraps(_REAL_LRU_CACHE)
+    def lru_cache_wrapper(*args, **kwargs):
+        """Wrap lru_cache decorator, to track which functions are decorated.
 
-        # When decorator is called without params, user function is first arg (maxsize)
-        if callable(maxsize) and typed is Ellipsis:
-            user_function = maxsize
-            wrapper = old_lru_cache(user_function)
-            cache_user_function(user_function, wrapper, lru_cache_disabled_modules)
-            return wrapper
+        Reads the _recording module global on every call, rather than closing over its value, so a
+        wrapper object kept alive by a `from functools import lru_cache` binding still obeys the
+        current session's mode instead of the mode in force when it was created.
+        """
+        result = _REAL_LRU_CACHE(*args, **kwargs)
 
-        # Apply lru_cache params (maxsize, typed)
-        kwargs = {}
-        if maxsize is not Ellipsis:
-            kwargs['maxsize'] = maxsize
-        if typed is not Ellipsis:
-            kwargs['typed'] = typed
-        wrapper = old_lru_cache(**kwargs)
+        # lru_cache has two forms. Applied bare, lru_cache(fn) returns the finished cache wrapper,
+        # which carries cache_clear. Called with options, lru_cache(maxsize=128) returns a
+        # decorating function with no cache_clear, which must still be applied to the user function.
+        if hasattr(result, 'cache_clear'):
+            if _recording:
+                cache_user_function(result.__wrapped__, result, lru_cache_disabled_modules)
+            return result
 
-        # Mimicking lru_cache: https://github.com/python/cpython/blob/v3.7.2/Lib/functools.py#L476-L478
-        @wraps(wrapper)
+        @wraps(result)
         def decorating_function(user_function):
             """Wraps the user function, which is what everyone is actually using. Including us."""
-            _wrapper = wrapper(user_function)
-            cache_user_function(user_function, _wrapper, lru_cache_disabled_modules)
-            return _wrapper
+            wrapper = result(user_function)
+            if _recording:
+                cache_user_function(user_function, wrapper, lru_cache_disabled_modules)
+            return wrapper
 
         return decorating_function
 
@@ -77,8 +81,22 @@ def pytest_load_initial_conftests(early_config, parser, args):  # pylint: disabl
 @pytest.hookimpl(hookwrapper=True)
 def pytest_collection(session):
     yield
-    # Be a good citizen and undo our monkeying
-    functools.lru_cache = old_lru_cache
+    # Stop recording rather than unpatching. A wrapper object a module bound by name during
+    # collection (e.g. `from functools import lru_cache`) survives this and stays installed there;
+    # reading this flag at call time is what makes it fall back to plain lru_cache behaviour anyway.
+    global _recording
+    _recording = False
+
+
+def pytest_unconfigure(config):  # pylint: disable=unused-argument
+    """Restore the real lru_cache attribute.
+
+    This reaches more pytest exit paths than pytest_collection's restore, though still not all of
+    them. Whatever wrapper object survives on the paths neither reaches can no longer self-recurse,
+    since it always calls _REAL_LRU_CACHE rather than whatever functools.lru_cache happens to be at
+    call time; that is the crash finding 1 describes, and it is fixed regardless of this hook.
+    """
+    functools.lru_cache = _REAL_LRU_CACHE
 
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
