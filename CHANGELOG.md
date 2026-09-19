@@ -12,6 +12,10 @@
   leaked. `functools.lru_cache` is no longer unpatched at the end of collection; instead the
   installed wrapper switches to a transparent pass-through mode, so a stale wrapper from an earlier
   session can no longer be mistaken for the real implementation.
+- An unknown keyword argument to `lru_cache` (for example, a typo like `lru_cache(max_size=128)`)
+  now raises `TypeError` from the real `lru_cache`, the same as it would with the plugin uninstalled.
+  Previously it was silently discarded, after a warning sent to the root logger that never appeared
+  in pytest's warnings summary and could not be filtered with `-W`.
 
 ### Changed
 
