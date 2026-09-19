@@ -6,8 +6,6 @@ from unittest import mock
 
 import pytest
 
-from pytest_antilru import main
-
 CACHED_RESULTS_FROM_TEST = {}
 CACHED_RESULTS_DURING_TEARDOWN = {}
 
@@ -73,20 +71,20 @@ def test_b_run_second(cache_function: Callable, assert_cache_visible_during_tear
         assert mock_network_call.called, 'the patched network function should be exercised'
 
 
-def test_lru_cache_unknown_kwargs():
-    '''Test that warning is emitted when new kwargs are added to lru_cache.
-
-    Let's hope somene reports the warning and we can get to patching.
-    '''
-    with mock.patch.object(main.logging, 'warning', wraps=main.logging.warning) as spy:
-        lru_cache(new_feature=1)(expensive_network_call)
-
-        assert spy.called
+def test_lru_cache_unknown_kwargs_raises():
+    '''An unknown keyword argument should raise TypeError from the real lru_cache, the same as it
+    would with the plugin uninstalled, rather than being silently discarded.'''
+    with pytest.raises(TypeError):
+        lru_cache(new_feature=1)
 
 
 class TestParameters:
     @lru_cache(1337, typed=True)
     def cache_me_lru_cache_explicit_param(self):
+        return mock.sentinel.default_param
+
+    @lru_cache(1337, True)
+    def cache_me_lru_cache_positional_param(self):
         return mock.sentinel.default_param
 
     def test(self):
@@ -96,6 +94,16 @@ class TestParameters:
     def test_explicit_parameters(self):  # pragma: no cover <python39
         '''Test the lru_cache parameters are wrapped correctly.'''
         assert self.cache_me_lru_cache_explicit_param.cache_parameters() == {
+            'maxsize': 1337,
+            'typed': True,
+        }
+
+    @pytest.mark.skipif(sys.version_info < (3, 9), reason='cache_parameters added to Python 3.9')
+    def test_positional_parameters(self):  # pragma: no cover <python39
+        '''maxsize and typed forwarded correctly when both are passed positionally, not just by
+        keyword; *args/**kwargs forwarding must not silently favor one calling convention.'''
+        assert self.cache_me_lru_cache_positional_param() == mock.sentinel.default_param
+        assert self.cache_me_lru_cache_positional_param.cache_parameters() == {
             'maxsize': 1337,
             'typed': True,
         }
