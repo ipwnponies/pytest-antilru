@@ -53,9 +53,9 @@ First, restoring an attribute cannot reach a name a module already bound to the 
 a second pytest session in the same interpreter (for example, a `pytester` inner run) would capture
 whatever `functools.lru_cache` currently was, at that second session's install, into what the wrapper
 treats as "the real implementation". If the first session's patch had leaked (many pytest exit paths
-never reach `pytest_collection`; see the exit-path table in
-`docs/future-work/2026-09-18-audit-remediation.md`), the second session captured the first session's
-own wrapper as real, and every cache lookup recursed into it forever.
+never reach `pytest_collection`; see the exit-path table under finding 1 in
+`docs/audit-2026-09-13.md`), the second session captured the first session's own wrapper as real, and
+every cache lookup recursed into it forever.
 
 The fix keeps one wrapper installed for the life of the process and switches what it does instead of
 removing it. `_REAL_LRU_CACHE` is captured once, at module import, before any patch can exist, so a
