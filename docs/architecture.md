@@ -56,6 +56,22 @@ application code those test modules import. The patch is installed for that whol
 That is the case the plugin is built for: a `@lru_cache` decorator on a module-level function, in a
 module that is reachable by importing your tests.
 
+### `functools.cache` is covered too
+
+`functools.cache` is not a separate cache implementation. CPython defines it as:
+
+```python
+def cache(user_function, /):
+    'Simple lightweight unbounded cache.  Sometimes called "memoize".'
+    return lru_cache(maxsize=None)(user_function)
+```
+
+`lru_cache` is resolved from the `functools` module globals on every call, so replacing the
+`functools.lru_cache` attribute also changes what `functools.cache` uses. This is an implementation
+detail rather than a documented contract: if `functools.cache` is ever reimplemented without calling
+through `lru_cache` at call time, this plugin would silently stop covering it. `tests/main_test.py`
+carries a regression test against this specifically because of that fragility.
+
 ## What is not covered
 
 A cache is only recorded if the call that creates it reaches the wrapper. Two situations where it

@@ -68,6 +68,9 @@ Collection is when pytest imports your test modules, and therefore when it impor
 code those tests import. A `@lru_cache` applied at module level is applied during that import, so it
 is recorded.
 
+`@functools.cache` is covered the same way: it delegates to `functools.lru_cache` internally, so
+replacing that attribute also changes what `functools.cache` uses.
+
 That is the normal case, and it needs no configuration:
 
 ```python

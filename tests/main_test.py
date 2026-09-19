@@ -1,5 +1,6 @@
 import sys
 from collections.abc import Callable
+from functools import cache
 from functools import lru_cache
 from unittest import mock
 
@@ -27,7 +28,12 @@ def cache_me_empty_decorator_call():
     return expensive_network_call()
 
 
-@pytest.fixture(params=[cache_me_lru_cache, cache_me_empty_decorator_call])
+@cache
+def cache_me_functools_cache():
+    return expensive_network_call()
+
+
+@pytest.fixture(params=[cache_me_lru_cache, cache_me_empty_decorator_call, cache_me_functools_cache])
 def cache_function(request):
     '''Exercise the same cache lifecycle assertions for both lru_cache decorator forms.'''
     # Initialize cross-test state for this cached function so test_b can compare
@@ -96,9 +102,12 @@ class TestParameters:
 
     @pytest.mark.skipif(sys.version_info < (3, 9), reason='cache_parameters added to Python 3.9')
     def test_default_parameters(self, cache_function: Callable):  # pragma: no cover <python39
-        '''Test the default parameter is wrapped correctly.'''
+        '''Test the default parameter is wrapped correctly.
 
+        @functools.cache is unbounded by default (maxsize=None); @lru_cache defaults to 128.
+        '''
+        expected_maxsize = None if cache_function is cache_me_functools_cache else 128
         assert cache_function.cache_parameters() == {
-            'maxsize': 128,
+            'maxsize': expected_maxsize,
             'typed': False,
         }
