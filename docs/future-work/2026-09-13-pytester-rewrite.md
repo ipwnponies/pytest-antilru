@@ -90,6 +90,12 @@ outer teardown would call `cache_clear()` on functions registered by the inner r
 the cross-contamination class this plugin exists to prevent, and it would make the suite's results
 untrustworthy.
 
+The inner run's own install also clears `CACHED_FUNCTIONS` before repopulating it, so it silently
+wipes whatever the outer run had already recorded during its own collection. The outer run's
+teardown then clears nothing for those caches for the rest of the outer session, with no error or
+warning. This is not merely a crash risk: it is silent, permanent loss of cache-busting for the
+outer session.
+
 **Subprocess runs are invisible to `coverage run`.** [`tox.ini`](../../tox.ini#L63-L64) enforces
 `coverage report --fail-under 100` on both [`pytest_antilru`](../../pytest_antilru) and
 [`tests`](../../tests). Subprocess coverage needs

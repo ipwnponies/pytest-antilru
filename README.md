@@ -58,6 +58,58 @@ def test_b_run_second() -> None:
 On your next test run, it doesn't matter what you
 mock, the results are already cached. Now trying running those two test out-of-order sequence and tell me how it goes.
 
+## What gets busted
+
+The plugin replaces `functools.lru_cache` with a wrapper while pytest collects your tests. The
+wrapper caches exactly as `lru_cache` does, and additionally records every cache it creates. After
+each test, every recorded cache is cleared.
+
+Collection is when pytest imports your test modules, and therefore when it imports the application
+code those tests import. A `@lru_cache` applied at module level is applied during that import, so it
+is recorded.
+
+That is the normal case, and it needs no configuration:
+
+```python
+@lru_cache
+def cache_me() -> int:
+    return expensive_network_call()
+```
+
+### What is not covered
+
+A cache that is not created during collection is not recorded, and is never cleared. Two ways that
+happens.
+
+**A module first imported while a test is running.** Application code that imports inside a function
+body, rather than at the top of the module, is not imported during collection:
+
+```python
+def handle(key):
+    from app import registry  # circular-import workaround
+    return registry.lookup(key)
+```
+
+`app.registry` is imported the first time `handle` runs, which is during a test. Its `@lru_cache`
+decorators are never recorded. PEP 8 asks for imports at the top of the module, and code that follows
+that is covered normally.
+
+**`lru_cache` applied at runtime instead of as a decorator.** The call happens when the object is
+built, which is usually during a test rather than during collection:
+
+```python
+class Client:
+    def __init__(self, conn):
+        self._lookup = functools.lru_cache(self._lookup_uncached)
+```
+
+In both cases the cache keeps its values across tests and nothing is reported. If you are debugging
+test pollution with this plugin installed, check for these two patterns first.
+
+`docs/architecture.md` explains the mechanism in full: a cache is recorded if and only if it is
+created while the plugin's patch is actively recording, from the moment it installs (before any test
+or application module is imported) through the end of collection.
+
 ## Dependencies
 
 Since this is a `pytest` plugin, you need to be using `pytest` to run your tests.
