@@ -1,6 +1,7 @@
 # Agent Instructions
 
 See `README.md` for what this plugin does, its compatibility matrix, and the Poetry→uv lockfile migration status.
+See `docs/architecture.md` for how the plugin intercepts `functools.lru_cache`, why each hook was chosen, and which cases the interception window does not cover.
 
 ## Preferred Make Targets
 

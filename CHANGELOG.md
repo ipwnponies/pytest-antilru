@@ -7,6 +7,19 @@
 - `lru_cache_disabled` now matches on module-path boundaries. An entry `app.util` matches `app.util`
   and `app.util.helpers`, but no longer matches `app.utilities` or `application`. Configs relying on
   the old raw-string prefix match must list the full module path.
+- Fixed a crash where a second pytest session in the same interpreter (for example, an inner
+  `pytester` run) would recurse forever and raise `RecursionError` if the first session's patch had
+  leaked. `functools.lru_cache` is no longer unpatched at the end of collection; instead the
+  installed wrapper switches to a transparent pass-through mode, so a stale wrapper from an earlier
+  session can no longer be mistaken for the real implementation.
+
+### Changed
+
+- Caches created after collection ends are no longer recorded, even in a module that imported
+  `lru_cache` by name (`from functools import lru_cache`) during collection. Previously such a
+  module's runtime-created caches kept being cleared between tests, by accident, while a module that
+  wrote `import functools` did not; both now behave the same way. This narrows behaviour that some
+  configurations may have relied on, so it ships as a minor release.
 
 ## [2.0.1] - 2026-04-29
 
