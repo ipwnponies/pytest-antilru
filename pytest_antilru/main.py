@@ -36,6 +36,9 @@ def pytest_load_initial_conftests(early_config, parser, args):  # pylint: disabl
     global old_lru_cache
     old_lru_cache = functools.lru_cache
 
+    # Reset in case a prior in-process session left wrappers registered.
+    CACHED_FUNCTIONS.clear()
+
     @wraps(functools.lru_cache)
     def lru_cache_wrapper(maxsize=Ellipsis, typed=Ellipsis, **kwargs):
         """Wrap lru_cache decorator, to track which functions are decorated."""
