@@ -21,7 +21,7 @@ Use `make publish` only when the user explicitly asks to publish a release, beca
 2. `git tag -a vX.Y.Z -m "..."` on the commit that lands on `master`, then `git push origin vX.Y.Z`.
 3. `make publish` (`uv build && uv publish`).
 
-`uv publish` needs PyPI credentials (`UV_PUBLISH_TOKEN` env var, or `--token`/`--username`+`--password` flags) — nothing in this repo documents where that token comes from or sets it up (no `.pypirc`, no CI secret, no `uv publish --trusted-publishing` config). Confirm with the repo owner how those credentials are supplied locally before running `make publish`.
+`uv publish` needs PyPI credentials (`UV_PUBLISH_TOKEN` env var, or `--token`/`--username`+`--password` flags) — nothing in this repo documents where that token comes from or sets it up (no `.pypirc`, no CI secret, no `uv publish --trusted-publishing` config). This is a secret: an agent must never read, set, or otherwise handle it. `make publish` is a step the repo owner runs themselves, in their own shell, with their own credentials already in their environment — an agent should not run it.
 
 ## uv-Managed Commands
 
