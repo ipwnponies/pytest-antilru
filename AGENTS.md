@@ -15,6 +15,14 @@ make build
 
 Use `make publish` only when the user explicitly asks to publish a release, because it performs `uv publish`.
 
+**Release process gap:** there is no CI workflow that tags, builds, or publishes a release — `.github/workflows/` contains only `test.yaml` (test matrix, runs on every push/PR). Cutting a release is entirely manual:
+
+1. Move `## Unreleased` entries in `CHANGELOG.md` into a new dated version section, bump `version` in `pyproject.toml`, commit.
+2. `git tag -a vX.Y.Z -m "..."` on the commit that lands on `master`, then `git push origin vX.Y.Z`.
+3. `make publish` (`uv build && uv publish`).
+
+`uv publish` needs PyPI credentials (`UV_PUBLISH_TOKEN` env var, or `--token`/`--username`+`--password` flags) — nothing in this repo documents where that token comes from or sets it up (no `.pypirc`, no CI secret, no `uv publish --trusted-publishing` config). Confirm with the repo owner how those credentials are supplied locally before running `make publish`.
+
 ## uv-Managed Commands
 
 If you need a Python command that does not already have a `make` target, run CLIs installed from this repo's `pyproject.toml` through `uv run` instead of invoking them directly.
