@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## [2.1.0] - 2026-09-24
+
 ### Fixed
 
 - `lru_cache_disabled` now matches on module-path boundaries. An entry `app.util` matches `app.util`
@@ -16,6 +18,9 @@
   now raises `TypeError` from the real `lru_cache`, the same as it would with the plugin uninstalled.
   Previously it was silently discarded, after a warning sent to the root logger that never appeared
   in pytest's warnings summary and could not be filtered with `-W`.
+- `CACHED_FUNCTIONS` registry is now cleared on install. Previously it was never reset, so a second
+  pytest session in the same interpreter kept calling `cache_clear()` on wrappers registered by an
+  earlier, already-exited session.
 
 ### Changed
 
