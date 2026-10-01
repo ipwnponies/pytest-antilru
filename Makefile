@@ -1,3 +1,4 @@
+SHELL := bash
 .DEFAULT_GOAL := test
 INSTALL_STAMP := .venv/venv.touch
 
@@ -20,7 +21,8 @@ lock:
 .PHONY: publish
 publish:
 	uv build
-	uv publish
+	@read -s -p "PyPI token: " UV_PUBLISH_TOKEN; echo; \
+	UV_PUBLISH_TOKEN=$$UV_PUBLISH_TOKEN uv publish
 
 .PHONY: build
 build:
