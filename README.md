@@ -1,3 +1,6 @@
+> [!IMPORTANT]
+> **Status: unmaintained.** This project is not currently maintained and is looking for maintainers.
+
 # pytest-antilru
 
 ![supported python versions](https://img.shields.io/pypi/pyversions/pytest-antilru)
