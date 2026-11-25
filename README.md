@@ -216,6 +216,15 @@ Matching is on module-path boundaries: an entry matches a module with exactly th
 it. `my_module.util` matches `my_module.util` and `my_module.util.helpers`, but does not match
 `my_module.utilities`.
 
+### `lru_cache_always_record`
+
+By default, `pytest-antilru` records `@lru_cache` functions during collection time. If your test suite imports modules containing `@lru_cache` inside test functions or fixtures (late imports), or instantiates objects with runtime `lru_cache` attributes, you can enable `lru_cache_always_record` to keep recording active during test execution:
+
+```ini
+[tool.pytest.ini_options]
+lru_cache_always_record = true
+```
+
 ## How to test the software
 
 ```sh

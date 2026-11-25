@@ -11,6 +11,7 @@ _REAL_LRU_CACHE = functools.lru_cache
 
 CACHED_FUNCTIONS = []
 _recording = False
+_always_record = False
 
 
 def is_module_covered(module: str, disabled_modules) -> bool:
@@ -31,6 +32,12 @@ def cache_user_function(user_function, wrapper, lru_cache_disabled_modules: bool
 
 def pytest_addoption(parser):
     parser.addini('lru_cache_disabled', 'Allowlist of module prefixes to apply disable lru_cache on', type='linelist')
+    parser.addini(
+        'lru_cache_always_record',
+        'Keep recording lru_cache functions during test execution (e.g. for late imports)',
+        type='bool',
+        default=False,
+    )
 
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
@@ -41,8 +48,9 @@ def pytest_load_initial_conftests(early_config, parser, args):  # pylint: disabl
     # Reset in case a prior in-process session left wrappers registered.
     CACHED_FUNCTIONS.clear()
 
-    global _recording
+    global _recording, _always_record
     _recording = True
+    _always_record = bool(early_config.getini('lru_cache_always_record'))
 
     @wraps(_REAL_LRU_CACHE)
     def lru_cache_wrapper(*args, **kwargs):
@@ -81,11 +89,13 @@ def pytest_load_initial_conftests(early_config, parser, args):  # pylint: disabl
 @pytest.hookimpl(hookwrapper=True)
 def pytest_collection(session):
     yield
-    # Stop recording rather than unpatching. A wrapper object a module bound by name during
-    # collection (e.g. `from functools import lru_cache`) survives this and stays installed there;
-    # reading this flag at call time is what makes it fall back to plain lru_cache behaviour anyway.
+    # Stop recording rather than unpatching, unless always_record is enabled.
+    # A wrapper object a module bound by name during collection (e.g. `from functools import lru_cache`)
+    # survives this and stays installed there; reading this flag at call time is what makes it fall
+    # back to plain lru_cache behaviour anyway.
     global _recording
-    _recording = False
+    if not _always_record:
+        _recording = False
 
 
 def pytest_unconfigure(config):  # pylint: disable=unused-argument
@@ -96,6 +106,8 @@ def pytest_unconfigure(config):  # pylint: disable=unused-argument
     since it always calls _REAL_LRU_CACHE rather than whatever functools.lru_cache happens to be at
     call time.
     """
+    global _always_record
+    _always_record = False
     functools.lru_cache = _REAL_LRU_CACHE
 
 

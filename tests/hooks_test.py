@@ -28,7 +28,7 @@ class FakeEarlyConfig:
 
 
 @contextlib.contextmanager
-def installed():
+def installed(always_record=False):
     '''Drive a real pytest_load_initial_conftests install and guarantee functools.lru_cache and
     main._recording are restored to their pre-install values afterward, even if the test body
     raises. Saving and restoring must happen through plain assignment, not monkeypatch: install
@@ -38,13 +38,22 @@ def installed():
     '''
     original_lru_cache = functools.lru_cache
     original_recording = main._recording
-    install = main.pytest_load_initial_conftests(FakeEarlyConfig(), FakeParser(), args=[])
+    original_always_record = main._always_record
+
+    class ConfigWithOption(FakeEarlyConfig):
+        def getini(self, name):
+            if name == 'lru_cache_always_record':
+                return always_record
+            return super().getini(name)
+
+    install = main.pytest_load_initial_conftests(ConfigWithOption(), FakeParser(), args=[])
     next(install)
     try:
         yield
     finally:
         functools.lru_cache = original_lru_cache
         main._recording = original_recording
+        main._always_record = original_always_record
 
 
 def test_addoption_registers_lru_cache_disabled_ini():
@@ -58,7 +67,14 @@ def test_addoption_registers_lru_cache_disabled_ini():
         (
             ('lru_cache_disabled', 'Allowlist of module prefixes to apply disable lru_cache on'),
             {'type': 'linelist'},
-        )
+        ),
+        (
+            (
+                'lru_cache_always_record',
+                'Keep recording lru_cache functions during test execution (e.g. for late imports)',
+            ),
+            {'type': 'bool', 'default': False},
+        ),
     ]
 
 
@@ -136,3 +152,28 @@ def test_unconfigure_restores_real_lru_cache(monkeypatch):
         main.pytest_unconfigure(config=None)
 
         assert functools.lru_cache is main._REAL_LRU_CACHE
+        assert main._always_record is False
+
+
+def test_always_record_keeps_recording_after_collection(monkeypatch):
+    '''When lru_cache_always_record is enabled, pytest_collection keeps recording active.'''
+    monkeypatch.setattr(main, 'CACHED_FUNCTIONS', [])
+
+    with installed(always_record=True):
+        assert main._recording is True
+
+        collection_hook = main.pytest_collection(session=mock.sentinel.session)
+        next(collection_hook)
+        try:
+            next(collection_hook)
+        except StopIteration:
+            pass
+
+        assert main._recording is True, 'recording should remain True when always_record is set'
+
+        @functools.lru_cache
+        def late_fn():
+            return mock.sentinel.late
+
+        assert late_fn() is mock.sentinel.late
+        assert late_fn in main.CACHED_FUNCTIONS
