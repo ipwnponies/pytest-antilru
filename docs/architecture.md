@@ -105,7 +105,9 @@ never recorded.
 
 Function-body imports are usually a workaround for a circular import, or a way to defer an optional
 or slow dependency. PEP 8 asks for imports at the top of the module, and code that follows that is
-covered normally. This is a known gap and is not planned for a fix.
+covered normally. By default, recording stops after collection, but if your test suite relies on late
+imports or runtime caching, set `lru_cache_always_record = true` in your pytest configuration to keep
+recording active throughout test execution.
 
 ### `lru_cache` applied at runtime rather than as a decorator
 
